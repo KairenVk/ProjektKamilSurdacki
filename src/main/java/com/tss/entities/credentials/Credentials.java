@@ -1,6 +1,10 @@
 package com.tss.entities.credentials;
 
+import org.hibernate.annotations.Proxy;
+
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 @Entity
 @Table(name = "credentials")

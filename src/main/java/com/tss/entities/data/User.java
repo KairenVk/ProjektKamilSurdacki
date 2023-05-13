@@ -1,5 +1,8 @@
 package com.tss.entities.data;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,7 +18,7 @@ public class User {
     @Column(name = "username", nullable = false, length = 20)
     private String username;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<Board_members> boards = new ArrayList<>();
 
     public Collection<Board_members> getBoards() {

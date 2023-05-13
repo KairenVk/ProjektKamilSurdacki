@@ -49,7 +49,7 @@ public class DataSourceDataConfig {
     }
 
     @Primary
-    @Bean
+    @Bean(name = "dataTransactionManager")
     public PlatformTransactionManager dataTransactionManager(
             final @Qualifier("dataEntityManagerFactory") LocalContainerEntityManagerFactoryBean dataEntityManagerFactory) {
         return new JpaTransactionManager(dataEntityManagerFactory.getObject());

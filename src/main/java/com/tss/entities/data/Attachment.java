@@ -27,7 +27,7 @@ public class Attachment {
     @Column(name = "time_modified")
     private Timestamp time_modified;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
+    @ManyToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "task_id", nullable = false)
     private Task task;
 

@@ -16,7 +16,7 @@ public class Board {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, optional = false)
+    @ManyToOne(cascade = CascadeType.REMOVE, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User ownerID;
 
@@ -34,12 +34,12 @@ public class Board {
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<List> lists = new ArrayList<>();
 
-    public Collection<List> getLists() {
-        return lists;
-    }
-
     public void setLists(Collection<List> lists) {
         this.lists = lists;
+    }
+
+    public Collection<List> getLists() {
+        return lists;
     }
 
     public Collection<Board_members> getBoard_members() {
