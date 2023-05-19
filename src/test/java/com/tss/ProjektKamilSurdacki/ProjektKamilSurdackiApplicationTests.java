@@ -41,7 +41,6 @@ class ProjektKamilSurdackiApplicationTests {
 	public void shouldSaveCredentialsToCredentialsDB() {
 		Credentials newCredentials = new Credentials();
 		newCredentials.setId(1L);
-		newCredentials.setUser_id(1L);
 		newCredentials.setLogin("test");
 		newCredentials.setPassword("password");
 		newCredentials.setEmail("test@mail.com");

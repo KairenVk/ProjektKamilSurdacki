@@ -19,11 +19,10 @@ public class CredentialsService {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public void addCredentials(@RequestBody RestForm newCredentials, Long userId) {
+    public void addCredentials(@RequestBody RestForm newCredentials) {
         Credentials credentials = new Credentials();
         credentials.setLogin(newCredentials.getLogin());
         credentials.setPassword(bCryptPasswordEncoder.encode(newCredentials.getPassword()));
-        credentials.setUser_id(userId);
         credentials.setEmail(newCredentials.getEmail());
         credentials.setActive(true);
         credentialsRepository.save(credentials);

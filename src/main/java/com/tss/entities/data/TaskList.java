@@ -1,13 +1,20 @@
 package com.tss.entities.data;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 
 @Entity
-@Table(name = "list")
-public class List {
+@Table(name = "tasklist")
+public class TaskList {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -22,11 +29,14 @@ public class List {
     @Column(name = "time_modified")
     private Timestamp time_modified;
 
-    @ManyToOne(cascade = CascadeType.ALL, optional = false)
+    @ManyToOne(cascade = CascadeType.MERGE, optional = false)
     @JoinColumn(name = "board_id", nullable = false)
+    @JsonBackReference(value="taskLists")
     private Board board;
 
-    @OneToMany(mappedBy = "list", cascade = CascadeType.ALL, orphanRemoval = true)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "taskList", cascade = CascadeType.MERGE, orphanRemoval = true)
+    @JsonManagedReference
     private Collection<Task> tasks = new ArrayList<>();
 
     public Collection<Task> getTasks() {

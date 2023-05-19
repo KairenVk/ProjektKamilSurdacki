@@ -1,5 +1,7 @@
 package com.tss.entities.data;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 
@@ -27,8 +29,9 @@ public class Attachment {
     @Column(name = "time_modified")
     private Timestamp time_modified;
 
-    @ManyToOne(cascade = CascadeType.ALL, optional = false)
+    @ManyToOne(cascade = CascadeType.MERGE, optional = false)
     @JoinColumn(name = "task_id", nullable = false)
+    @JsonBackReference(value="TaskAttachments")
     private Task task;
 
     public Task getTask() {

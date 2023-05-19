@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class JsonConfiguration {
+public class JsonConfig {
     @Bean
     public Module hibernateModule() {
         return new Hibernate5Module();

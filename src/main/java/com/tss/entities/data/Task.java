@@ -1,5 +1,10 @@
 package com.tss.entities.data;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -26,33 +31,27 @@ public class Task {
     @Column(name = "time_modified")
     private Timestamp time_modified;
 
-    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "task", cascade = CascadeType.MERGE, orphanRemoval = true)
+    @JsonManagedReference(value="TaskAttachments")
     private Collection<Attachment> attachments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "task", cascade = CascadeType.MERGE, orphanRemoval = true)
+    @JsonManagedReference(value="TaskComments")
     private Collection<Comment> comments = new ArrayList<>();
 
-    @ManyToOne(cascade = CascadeType.ALL, optional = false)
-    @JoinColumn(name = "list_id", nullable = false)
-    private List list;
+    @ManyToOne(cascade = CascadeType.MERGE, optional = false)
+    @JoinColumn(name = "taskList_id", nullable = false)
+    @JsonBackReference
+    private TaskList taskList;
 
-    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Collection<Action> actions = new ArrayList<>();
-
-    public Collection<Action> getActions() {
-        return actions;
+    public TaskList getTaskList() {
+        return taskList;
     }
 
-    public void setActions(Collection<Action> actions) {
-        this.actions = actions;
-    }
-
-    public List getList() {
-        return list;
-    }
-
-    public void setList(List list) {
-        this.list = list;
+    public void setTaskList(TaskList taskList) {
+        this.taskList = taskList;
     }
 
     public Collection<Comment> getComments() {

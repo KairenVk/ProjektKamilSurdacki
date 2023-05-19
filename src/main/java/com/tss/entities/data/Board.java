@@ -1,5 +1,13 @@
 package com.tss.entities.data;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -16,30 +24,41 @@ public class Board {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @ManyToOne(cascade = CascadeType.REMOVE, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User ownerID;
-
-
-
     @Column(name = "time_created", nullable = false)
     private Timestamp time_created;
 
     @Column(name = "time_modified")
     private Timestamp time_modified;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "board", cascade = CascadeType.MERGE, orphanRemoval = true)
+    @JsonIgnore
     private Collection<Board_members> board_members = new ArrayList<>();
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Collection<List> lists = new ArrayList<>();
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "board", cascade = CascadeType.MERGE, orphanRemoval = true)
+    @JsonManagedReference(value = "taskLists")
+    private Collection<TaskList> taskLists = new ArrayList<>();
 
-    public void setLists(Collection<List> lists) {
-        this.lists = lists;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference(value="ownerToBoard")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private User owner;
+
+    public User getOwner() {
+        return owner;
     }
 
-    public Collection<List> getLists() {
-        return lists;
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+
+    public void setTaskLists(Collection<TaskList> taskLists) {
+        this.taskLists = taskLists;
+    }
+
+    public Collection<TaskList> getTaskLists() {
+        return taskLists;
     }
 
     public Collection<Board_members> getBoard_members() {
@@ -66,14 +85,6 @@ public class Board {
         this.time_created = time_created;
     }
 
-    public User getOwnerID() {
-        return ownerID;
-    }
-
-    public void setOwnerID(User ownerID) {
-        this.ownerID = ownerID;
-    }
-
     public String getTitle() {
         return title;
     }
@@ -90,4 +101,7 @@ public class Board {
         this.id = id;
     }
 
+    public void addTaskList(TaskList taskList) {
+        this.taskLists.add(taskList);
+    }
 }

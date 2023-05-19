@@ -1,6 +1,7 @@
 package com.tss.assemblers;
 
 import com.tss.controllers.UserRestController;
+import com.tss.entities.RestForm;
 import com.tss.entities.data.User;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;

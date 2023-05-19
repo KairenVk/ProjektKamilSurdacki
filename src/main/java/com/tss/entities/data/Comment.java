@@ -1,5 +1,7 @@
 package com.tss.entities.data;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 
@@ -18,11 +20,12 @@ public class Comment {
     @Column(name = "time_created", nullable = false)
     private Timestamp time_created;
 
-    @ManyToOne(cascade = CascadeType.ALL, optional = false)
+    @ManyToOne(cascade = CascadeType.MERGE, optional = false)
     @JoinColumn(name = "task_id", nullable = false)
+    @JsonBackReference(value="TaskComments")
     private Task task;
 
-    @ManyToOne(cascade = CascadeType.ALL, optional = false)
+    @ManyToOne(cascade = CascadeType.MERGE, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 

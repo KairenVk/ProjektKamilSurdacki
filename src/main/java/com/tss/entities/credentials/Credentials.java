@@ -15,7 +15,7 @@ public class Credentials {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "login", nullable = false, unique = true, length = 30)
+    @Column(name = "login", nullable = false, length = 30)
     private String login;
 
     @Column(name = "password", nullable = false)
@@ -26,17 +26,6 @@ public class Credentials {
 
     @Column(name = "active", nullable = false)
     private Boolean active = true;
-
-    @Column(name = "user_id", nullable = false, unique = true)
-    private Long user_id;
-
-    public Long getUser_id() {
-        return user_id;
-    }
-
-    public void setUser_id(Long user_id) {
-        this.user_id = user_id;
-    }
 
     public Boolean getActive() {
         return active;

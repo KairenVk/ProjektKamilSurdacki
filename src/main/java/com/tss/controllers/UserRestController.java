@@ -3,17 +3,18 @@ package com.tss.controllers;
 import com.tss.assemblers.UserModelAssembler;
 import com.tss.entities.RestForm;
 import com.tss.entities.data.User;
-import com.tss.exceptions.UserNotFoundException;
+import com.tss.exceptions.EntityByNameNotFoundException;
+import com.tss.exceptions.EntityNotFoundException;
 import com.tss.repositories.credentials.CredentialsRepository;
 import com.tss.repositories.data.UserRepository;
 import com.tss.services.CredentialsService;
 import com.tss.services.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.text.html.parser.Entity;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,27 +52,32 @@ public class UserRestController {
     @GetMapping("/user/{id}")
     public EntityModel<User> getUser(@PathVariable Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id));
+                .orElseThrow(() -> new EntityNotFoundException(User.class.getSimpleName(),id));
         return userModelAssembler.toModel(user);
     }
 
+    @GetMapping("/user/getByUsername/{username}")
+    public EntityModel<User> getUserByUsername(@PathVariable String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityByNameNotFoundException(User.class.getSimpleName(), username));
+        return userModelAssembler.toModel(user);
+    }
     @PostMapping("/addUser")
-    User addUser(@RequestBody RestForm newForm) {
-        User user = userService.addUser(newForm);
-        credentialsService.addCredentials(newForm, user.getId());
+    public EntityModel<User> addUser(@RequestBody RestForm newUser) {
+        User user = userService.addUser(newUser);
+        return userModelAssembler.toModel(user);
+    }
+
+    @PutMapping("/user/{id}")
+    public User editUser(@RequestBody RestForm modifiedUser, @PathVariable Long id) {
+        User user = userService.editUser(modifiedUser,id);
         return user;
     }
 
-    @PutMapping("/editUser/{id}")
-    User editUser(@RequestBody RestForm editForm, @PathVariable Long id) {
-        User user = userService.editUser(editForm,id);
-        credentialsService.editCredentials(editForm,id);
-        return user;
-    }
-
-    @DeleteMapping("/employees/{id}")
-    void deleteUser(@PathVariable Long id) {
-        userRepository.delete(userRepository.getReferenceById(id));
+    @DeleteMapping("/user/{id}")
+    public void deleteUser(@PathVariable Long id) {
+        userRepository.delete(userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(User.class.getSimpleName(), id)));
     }
 
 }
