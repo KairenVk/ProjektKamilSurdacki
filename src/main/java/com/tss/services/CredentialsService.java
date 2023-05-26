@@ -1,6 +1,6 @@
 package com.tss.services;
 
-import com.tss.entities.RestForm;
+import com.tss.to.RegisterTO;
 import com.tss.entities.credentials.Credentials;
 import com.tss.repositories.credentials.CredentialsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +19,16 @@ public class CredentialsService {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public void addCredentials(@RequestBody RestForm newCredentials) {
+    public void addCredentials(@RequestBody RegisterTO newCredentials) {
         Credentials credentials = new Credentials();
-        credentials.setLogin(newCredentials.getLogin());
+        credentials.setUsername(newCredentials.getUsername());
         credentials.setPassword(bCryptPasswordEncoder.encode(newCredentials.getPassword()));
         credentials.setEmail(newCredentials.getEmail());
         credentials.setActive(true);
         credentialsRepository.save(credentials);
     }
 
-    public Credentials editCredentials(@RequestBody RestForm editForm, Long userId) {
+    public Credentials editCredentials(@RequestBody RegisterTO editForm, Long userId) {
         Credentials credentials = credentialsRepository.getReferenceById(userId);
         credentials.setPassword(editForm.getPassword());
         credentials.setEmail(editForm.getEmail());

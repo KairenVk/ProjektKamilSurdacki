@@ -1,9 +1,7 @@
 package com.tss.config;
 
-import com.tss.components.JwtAuthenticationEntryPoint;
 import com.tss.filters.JwtRequestFilter;
 import com.tss.services.JwtUserDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,14 +26,14 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
 
-    @Autowired
-    @Qualifier("dataSourceAuth")
-    private DataSource dataSourceAuth;
+    private final DataSource dataSourceAuth;
+    private final JwtRequestFilter jwtRequestFilter;
+    private final JwtUserDetailsService jwtUserDetailsService;
 
-    @Autowired
-    private JwtUserDetailsService jwtUserDetailsService;
-
-    public WebSecurityConfig() {
+    public WebSecurityConfig(@Qualifier("dataSourceAuth") DataSource dataSourceAuth, JwtUserDetailsService jwtUserDetailsService, JwtRequestFilter jwtRequestFilter ) {
+        this.dataSourceAuth = dataSourceAuth;
+        this.jwtUserDetailsService = jwtUserDetailsService;
+        this.jwtRequestFilter = jwtRequestFilter;
     }
 
     @Bean
@@ -46,19 +44,12 @@ public class WebSecurityConfig {
     public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
         auth.jdbcAuthentication()
                 .dataSource(dataSourceAuth)
-                .usersByUsernameQuery("select login, password, active from credentials where login=?")
-                .authoritiesByUsernameQuery("select login, user_role from users_roles where login=?");
+                .usersByUsernameQuery("select username, password, active from credentials where username=?")
+                .authoritiesByUsernameQuery("select username, user_role from users_roles where username=?");
         auth.userDetailsService(jwtUserDetailsService);
         auth.inMemoryAuthentication()
                 .withUser("admin").password("password").roles("ADMIN");
     }
-
-    @Autowired
-    private JwtRequestFilter jwtRequestFilter;
-
-    @Autowired
-    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-
 
     @Bean
     AuthenticationManager authenticationManager(
@@ -66,30 +57,18 @@ public class WebSecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//                .csrf().disable()
-//                .authorizeRequests().antMatchers("/authenticate").permitAll()
-//                .anyRequest().authenticated()
-//                .and()
-//                .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
-//                .and()
-//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-//        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-//        return http.build();
-//    }
-
     @Bean
     @Order(1)
     public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
                 .authorizeHttpRequests(authenticate -> authenticate
-                        .requestMatchers("/rest/authenticate").permitAll())
+                        .requestMatchers("/rest/authenticate").permitAll()
+                        .requestMatchers("/rest/user/addUser").permitAll()
+                )
                 .antMatcher("/rest/**")
                 .authorizeHttpRequests(rest -> rest
-                    .anyRequest().authenticated())
+                        .anyRequest().authenticated())
                 .httpBasic(withDefaults());
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
@@ -100,6 +79,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain formLoginFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(web -> web
+                        .requestMatchers("/").permitAll()
                         .requestMatchers("/home").authenticated()
                 )
                 .formLogin(withDefaults());

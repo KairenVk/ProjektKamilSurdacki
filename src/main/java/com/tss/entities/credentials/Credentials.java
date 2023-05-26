@@ -1,10 +1,6 @@
 package com.tss.entities.credentials;
 
-import org.hibernate.annotations.Proxy;
-
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
 
 @Entity
 @Table(name = "credentials")
@@ -15,8 +11,8 @@ public class Credentials {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "login", nullable = false, length = 30)
-    private String login;
+    @Column(name = "username", nullable = false, unique = true, length = 60)
+    private String username;
 
     @Column(name = "password", nullable = false)
     private String password;
@@ -51,19 +47,19 @@ public class Credentials {
         this.password = password;
     }
 
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

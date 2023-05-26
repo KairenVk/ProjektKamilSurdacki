@@ -3,6 +3,7 @@ package com.tss.controllers;
 import com.tss.assemblers.BoardModelAssembler;
 import com.tss.entities.data.Board;
 import com.tss.entities.data.User;
+import com.tss.exceptions.EntityByNameNotFoundException;
 import com.tss.exceptions.EntityNotFoundException;
 import com.tss.repositories.data.BoardRepository;
 import com.tss.repositories.data.UserRepository;
@@ -10,6 +11,7 @@ import com.tss.services.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -20,6 +22,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/rest")
+@Transactional
 public class BoardRestController {
 
     @Autowired
@@ -52,6 +55,18 @@ public class BoardRestController {
 
         return CollectionModel.of(boards, linkTo(methodOn(BoardRestController.class).getBoardsByUserId(userId)).withSelfRel());
     }
+
+    @GetMapping("/boards/getByUsername/{username}")
+    public CollectionModel<EntityModel<Board>> getBoardsByUsername(@PathVariable String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityByNameNotFoundException(User.class.getSimpleName(), username));
+        List<EntityModel<Board>> boards = boardRepository.findAllByOwner(user).stream()
+                .map(boardModelAssembler::toModel)
+                .toList();
+
+        return CollectionModel.of(boards, linkTo(methodOn(BoardRestController.class).getBoardsByUsername(username)).withSelfRel());
+    }
+
     @PostMapping("/addBoard")
     public EntityModel<Board> addBoard(@RequestBody Board board) {
         Board newBoard = boardService.addBoard(board);
@@ -84,6 +99,4 @@ public class BoardRestController {
         Board board = boardService.addBoardMembersByUsernames(users, boardId);
         return boardModelAssembler.toModel(board);
     }
-
-    //TODO: @GetMapping("/user/{id}/boards") place methods based on return type
 }

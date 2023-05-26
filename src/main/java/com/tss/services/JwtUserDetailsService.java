@@ -22,12 +22,12 @@ public class JwtUserDetailsService implements UserDetailsService {
     Users_rolesRepository usersRolesRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String login) {
-        Credentials credentials = credentialsRepository.findByLogin(login);
+    public UserDetails loadUserByUsername(String username) {
+        Credentials credentials = credentialsRepository.findByUsername(username);
         if (credentials != null) {
-            return new User(credentials.getLogin(), credentials.getPassword(), new ArrayList<>());
+            return new User(credentials.getUsername(), credentials.getPassword(), new ArrayList<>());
         }
         else
-            throw new UsernameNotFoundException("User not found with login: " + login);
+            throw new UsernameNotFoundException("User not found with login: " + username);
     }
 }

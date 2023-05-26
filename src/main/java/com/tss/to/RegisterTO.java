@@ -1,13 +1,12 @@
-package com.tss.entities;
+package com.tss.to;
 
 import com.tss.entities.credentials.Credentials;
 import com.tss.entities.data.Board;
 import com.tss.entities.data.Board_members;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
-public class RestForm extends Credentials {
+public class RegisterTO extends Credentials {
 
     private String username;
 

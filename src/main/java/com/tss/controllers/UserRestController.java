@@ -1,7 +1,7 @@
 package com.tss.controllers;
 
 import com.tss.assemblers.UserModelAssembler;
-import com.tss.entities.RestForm;
+import com.tss.to.RegisterTO;
 import com.tss.entities.data.User;
 import com.tss.exceptions.EntityByNameNotFoundException;
 import com.tss.exceptions.EntityNotFoundException;
@@ -62,14 +62,14 @@ public class UserRestController {
                 .orElseThrow(() -> new EntityByNameNotFoundException(User.class.getSimpleName(), username));
         return userModelAssembler.toModel(user);
     }
-    @PostMapping("/addUser")
-    public EntityModel<User> addUser(@RequestBody RestForm newUser) {
+    @PostMapping("/user/addUser")
+    public EntityModel<User> addUser(RegisterTO newUser) {
         User user = userService.addUser(newUser);
         return userModelAssembler.toModel(user);
     }
 
     @PutMapping("/user/{id}")
-    public User editUser(@RequestBody RestForm modifiedUser, @PathVariable Long id) {
+    public User editUser(@RequestBody RegisterTO modifiedUser, @PathVariable Long id) {
         User user = userService.editUser(modifiedUser,id);
         return user;
     }

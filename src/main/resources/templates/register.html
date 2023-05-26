@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Rejestracja do Trello At Home</title>
+  <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" crossorigin="anonymous"></link>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" crossorigin="anonymous"></link>
+</head>
+<body>
+<form action="#" th:action="@{/rest/user/addUser}" th:object="${registerTO}" method="post">
+  <div class="form-group">
+    <label>Nazwa użytkownika</label>
+    <input type="text" th:field="*{username}" id="username" placeholder="Nazwa użytkownika"/>
+  </div>
+  <div class="form-group">
+    <label>Hasło</label>
+    <input type="text" th:field="*{password}" id="password" placeholder="Hasło"/>
+  </div>
+  <div class="form-group">
+    <label>Adres e-mail</label>
+    <input type="text" th:field="*{email}" id="email" placeholder=""/>
+  </div>
+  <input type="submit" value="Dodaj użytkownika"/>
+</form>
+</body>
+</html>
