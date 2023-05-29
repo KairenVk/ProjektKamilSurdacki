@@ -10,9 +10,8 @@
   <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js" integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0=" crossorigin="anonymous"></script>
   <script th:inline="javascript">
     var username = /*[[${#authentication.principal.username}]]*/ null;
-    console.log(username)
   </script>
-  <script th:src="@{LoadBoards.js}"></script>
+  <script th:src="@{/js/LoadBoards.js}"></script>
   <style>
     .col-task-list {
       width: 255px;
@@ -63,36 +62,6 @@
       right: 0;
     }
   </style>
-<!--  <script defer>-->
-<!--    $(function() {-->
-<!--      $(document).on('click', function() {-->
-<!--        $('.list-name-overlay').removeClass('d-none');-->
-<!--      });-->
-<!--      $('.list-tasks').sortable({-->
-<!--        revert: true,-->
-<!--        connectWith: '.list-tasks',-->
-<!--        placeholder: "task-block-placeholder",-->
-<!--        update: function(event, ui) {-->
-<!--          // some action-->
-<!--        }-->
-<!--      }).disableSelection();-->
-<!--      $('.list-container').sortable({-->
-<!--        helper: 'clone',-->
-<!--        revert: true,-->
-<!--        connectWith: '.list-container',-->
-<!--        handle: '.list-header',-->
-<!--        update: function(event, ui) {-->
-<!--          // some action-->
-<!--        }-->
-<!--      }).disableSelection();-->
-<!--      $('.list-name-overlay').on('click', function(event) {-->
-<!--        event.stopPropagation();-->
-<!--        $(this).addClass('d-none');-->
-<!--        $(this).siblings('textarea').first().trigger('focus');-->
-<!--        return false;-->
-<!--      });-->
-<!--    });-->
-<!--  </script>-->
 </head>
 <body class="bg-dark text-light">
 <nav class="container-fluid mb-2 bg-black">

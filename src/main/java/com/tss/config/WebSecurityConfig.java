@@ -47,8 +47,8 @@ public class WebSecurityConfig {
                 .usersByUsernameQuery("select username, password, active from credentials where username=?")
                 .authoritiesByUsernameQuery("select username, user_role from users_roles where username=?");
         auth.userDetailsService(jwtUserDetailsService);
-        auth.inMemoryAuthentication()
-                .withUser("admin").password("password").roles("ADMIN");
+//        auth.inMemoryAuthentication()
+//                .withUser("admin").password("password").roles("ADMIN");
     }
 
     @Bean
@@ -79,8 +79,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain formLoginFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(web -> web
-                        .requestMatchers("/").permitAll()
-                        .requestMatchers("/home").authenticated()
+                        .anyRequest().authenticated()
                 )
                 .formLogin(withDefaults());
         return http.build();

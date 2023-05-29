@@ -1,7 +1,7 @@
 package com.tss.services;
 
 import com.tss.assemblers.UserModelAssembler;
-import com.tss.to.RegisterTO;
+import com.tss.to.UserDTO;
 import com.tss.entities.data.Board;
 import com.tss.entities.data.Board_members;
 import com.tss.entities.data.User;
@@ -28,7 +28,7 @@ public class UserService {
     @Autowired
     private UserModelAssembler userModelAssembler;
 
-    public User addUser(RegisterTO newUser) {
+    public User addUser(UserDTO newUser) {
         User user = new User();
         user.setUsername(newUser.getUsername());
         if (newUser.getOwned_boards() != null) {
@@ -48,11 +48,17 @@ public class UserService {
         return user;
     }
 
-    public User editUser(@RequestBody RegisterTO editForm, Long id) {
+    public User editUser(@RequestBody UserDTO editForm, Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(User.class.getSimpleName(),id));
         user.setUsername(editForm.getUsername());
         credentialsService.editCredentials(editForm,id);
         return user;
+    }
+
+    public void deleteUser(Long id) {
+        userRepository.delete(userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(User.class.getSimpleName(), id)));
+        credentialsService.deleteCredentials(id);
     }
 
     public void addOwnedBoardToUser(Board board) {

@@ -2,26 +2,26 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://thymeleaf.org">
 <head>
   <meta charset="UTF-8"/>
-  <title>Rejestracja do Trello At Home</title>
+  <title>Modyfikacja użytkownika</title>
   <link rel="stylesheet"
         href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" crossorigin="anonymous"></link>
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" crossorigin="anonymous"></link>
 </head>
 <body>
-<form action="#" th:action="@{/addUser}" th:object="${userDTO}" method="post">
+<form action="#" th:action="@{/editUser/{id}(id=${userDTO.id})}" th:object="${userDTO}" method="post">
   <div class="form-group">
     <label>Nazwa użytkownika</label>
-    <input type="text" th:field="*{username}" id="username" placeholder="Nazwa użytkownika"/>
+    <input type="text" th:field="*{username}"/>
   </div>
   <div class="form-group">
     <label>Hasło</label>
-    <input type="password" th:field="*{password}" id="password" placeholder="Hasło"/>
+    <input type="password" th:field="*{password}"/>
   </div>
   <div class="form-group">
     <label>Adres e-mail</label>
-    <input type="email" th:field="*{email}" id="email" placeholder="E-mail"/>
+    <input type="email" th:field="*{email}"/>
   </div>
-  <input type="submit" value="Dodaj użytkownika"/>
+  <input type="submit" value="Zapisz użytkownika"/>
 </form>
 </body>
 </html>

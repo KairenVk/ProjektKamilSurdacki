@@ -12,13 +12,17 @@
         <div style="text-align: center;">
             <h1>Projekt aplikacji PMS</h1>
             <h2>Surdacki Kamil</h2>
+            <div><a th:href="@{/tss_users}">Lista użytkowników projektu</a></div>
+            <div><a th:href="@{/rest/users}">Lista użytkowników projektu (Rest API)</a></div>
+            <div><a th:href="@{/tss_websocketNoJSON}">Websocket bez JSON</a></div>
+            <div><a th:href="@{/tss_websocket}">Websocket z JSON</a></div>
+            <div><a th:href="@{/board/1}">Websocket z bazy danych</a></div>
             <div th:text="'Wersja Spring Boot Starter: '+${springBootVersion}"></div>
             <div th:text="'Czas kompilacji: '+${buildTimestamp}"></div>
             <div th:text="'Wersja JDK: '+${jdkVersion}"></div>
             <div th:text="'Nazwa aplikacji: '+${applicationName}"></div>
             <div th:text="'Wersja builda: '+${buildVersion}"></div>
-            <div><a th:href="@{/login}"><h2>Zaloguj się</h2></a></div>
-            <div><a th:href="@{/register}"><h2>Zarejestruj się</h2></a></div>
+            <div><a th:href="@{/logout}"><h2>Wyloguj się</h2></a></div>
         </div>
     </body>
 </html>
