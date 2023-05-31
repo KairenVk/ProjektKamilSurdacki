@@ -19,7 +19,6 @@ function displayLists(data)     {
                                 +'<div class="list-name-overlay"></div>'
                                 +'<textarea class="list-name form-control">'+data._embedded.taskListList[i].title+'</textarea>'
                             +'</div>'
-                            +'<span class="list-options">...</span>'
                         +'</header>'
                         +'<section class="list-tasks list-column">';
                         for(j = 0; j < data._embedded.taskListList[i].tasks.length; j++) {
@@ -30,7 +29,7 @@ function displayLists(data)     {
                             }
                         out+='</section>'
                         +'<footer class="list-footer">'
-                            +'<a href="/addList"><button class="btn btn-light shadow-sm container-fluid" role="button">Add task</button></a>'
+                            +'<a href="/addTaskForm"><button class="btn btn-light shadow-sm container-fluid" role="button">Add task</button></a>'
                         +'</footer>'
                     +'</section>'
                 +'</div>';

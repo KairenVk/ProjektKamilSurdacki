@@ -6,7 +6,7 @@ import com.tss.entities.data.Board_members;
 
 import java.util.Collection;
 
-public class RegisterTO extends Credentials {
+public class UserDTO extends Credentials {
 
     private String username;
 

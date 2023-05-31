@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -36,10 +39,8 @@ public class ListRestController {
     @GetMapping("/lists/getListsByBoard/{boardId}")
     public CollectionModel<EntityModel<TaskList>> all(@PathVariable Long boardId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new EntityNotFoundException(Board.class.getSimpleName(),boardId));
-        java.util.List<EntityModel<TaskList>> lists = taskListRepository.findAllByBoard(board).stream()
-                .map(listModelAssembler::toModel)
-                .collect(Collectors.toList());
-
+        List <EntityModel<TaskList>> lists = taskListRepository.findAllByBoard(board).stream()
+                .map(listModelAssembler::toModel).sorted(Comparator.comparingInt(o -> o.getContent().getList_order())).collect(Collectors.toList());
         return CollectionModel.of(lists, linkTo(methodOn(ListRestController.class).all(boardId)).withSelfRel());
     }
 
@@ -52,6 +53,7 @@ public class ListRestController {
     @PutMapping("/list/{listId}")
     public EntityModel<TaskList> editList(@RequestBody TaskList editedTaskList, @PathVariable Long listId) {
         TaskList taskList = taskListRepository.findById(listId).orElseThrow(() -> new EntityNotFoundException(TaskList.class.getSimpleName(), listId));
+        System.out.println(taskList.getList_order());
         taskList = taskListService.editList(taskList, editedTaskList);
         return listModelAssembler.toModel(taskList);
     }

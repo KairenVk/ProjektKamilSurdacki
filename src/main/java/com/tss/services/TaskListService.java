@@ -24,6 +24,7 @@ public class TaskListService {
 
     public TaskList addList(TaskList newTaskList) {
         newTaskList.setTime_created(Timestamp.from(Instant.now()));
+        newTaskList.setList_order(taskListRepository.findAllByBoard(newTaskList.getBoard()).size()+1);
         taskListRepository.save(newTaskList);
         if (newTaskList.getTasks() != null) {
             for(Task task: newTaskList.getTasks()) {
@@ -35,6 +36,7 @@ public class TaskListService {
 
     public TaskList editList(TaskList taskList, TaskList updatedTaskList) {
         taskList.setTitle(updatedTaskList.getTitle());
+        taskList.setList_order(updatedTaskList.getList_order());
         taskList.setTime_modified(Timestamp.from(Instant.now()));
         taskListRepository.save(taskList);
         return taskList;

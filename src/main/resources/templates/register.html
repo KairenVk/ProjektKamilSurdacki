@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" crossorigin="anonymous"></link>
 </head>
 <body>
-<form action="#" th:action="@{/rest/user/addUser}" th:object="${registerTO}" method="post">
+<form action="#" th:action="@{/rest/user/addUser}" th:object="${userDTO}" method="post">
   <div class="form-group">
     <label>Nazwa użytkownika</label>
     <input type="text" th:field="*{username}" id="username" placeholder="Nazwa użytkownika"/>

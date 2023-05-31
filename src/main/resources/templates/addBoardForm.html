@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form action="#" th:action="@{/addBoard}" th:object="${board}" method="post">
+        <div class="form-group">
+            <label>Title</label>
+            <input type="text" th:field="*{title}" id="title" placeholder="Title"/>
+        </div>
+        <input type="submit" value="Add board"/>
+    </form>
+</body>
+</html>

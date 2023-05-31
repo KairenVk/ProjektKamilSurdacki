@@ -7,9 +7,7 @@ import com.tss.repositories.data.UserRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.util.Optional;
 
@@ -41,7 +39,7 @@ class ProjektKamilSurdackiApplicationTests {
 	public void shouldSaveCredentialsToCredentialsDB() {
 		Credentials newCredentials = new Credentials();
 		newCredentials.setId(1L);
-		newCredentials.setLogin("test");
+		newCredentials.setUsername("test");
 		newCredentials.setPassword("password");
 		newCredentials.setEmail("test@mail.com");
 		newCredentials.setActive(true);

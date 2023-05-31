@@ -2,10 +2,10 @@ package com.tss.entities.data;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.tss.repositories.data.TaskListRepository;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -15,6 +15,11 @@ import java.util.Collection;
 @Entity
 @Table(name = "tasklist")
 public class TaskList {
+
+    @Autowired
+    @Transient
+    private TaskListRepository taskListRepository;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -38,6 +43,9 @@ public class TaskList {
     @OneToMany(mappedBy = "taskList", cascade = CascadeType.MERGE, orphanRemoval = true)
     @JsonManagedReference
     private Collection<Task> tasks = new ArrayList<>();
+
+    @Column(name = "list_order")
+    private int list_order;
 
     public Collection<Task> getTasks() {
         return tasks;
@@ -87,4 +95,12 @@ public class TaskList {
         this.id = id;
     }
 
+    public int getList_order() {
+        return list_order;
+    }
+
+    public void setList_order(int order) {
+        this.list_order = order;
+    }
 }
+
