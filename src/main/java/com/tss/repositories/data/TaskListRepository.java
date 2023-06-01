@@ -9,4 +9,6 @@ import java.util.List;
 public interface TaskListRepository extends JpaRepository<TaskList, Long> {
 
     List<TaskList> findAllByBoard(Board board);
+    List<TaskList> findAllByListOrderGreaterThanAndListOrderLessThanEqual(Integer order1, Integer order2);
+    List<TaskList> findAllByListOrderLessThanAndListOrderGreaterThanEqual(Integer order1, Integer order2);
 }

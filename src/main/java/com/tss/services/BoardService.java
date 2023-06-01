@@ -33,14 +33,25 @@ public class BoardService {
     @Autowired
     private TaskListService taskListService;
 
-    public Board addBoard(@RequestBody Board board) {
-        board.setTime_created(Timestamp.from(Instant.now()));
+    public Board restAddBoard(@RequestBody Board board) {
+        board.setTimeCreated(Timestamp.from(Instant.now()));
         board.setOwner(userRepository.findById(board.getOwner().getId())
                 .orElseThrow(() -> new EntityNotFoundException(User.class.getSimpleName(),board.getOwner().getId())));
+        return addBoard(board);
+    }
+
+    public Board webAddBoard(@RequestBody Board board, String ownerUsername) {
+        board.setTimeCreated(Timestamp.from(Instant.now()));
+        board.setOwner(userRepository.findByUsername(ownerUsername)
+                .orElseThrow(() -> new EntityNotFoundException(User.class.getSimpleName(),board.getOwner().getId())));
+        return addBoard(board);
+    }
+
+    private Board addBoard(@RequestBody Board board) {
         board.getOwner().addBoard(board);
         boardRepository.save(board);
-        if (board.getBoard_members() != null) {
-            for(Board_members member:board.getBoard_members()) {
+        if (board.getBoardMembers() != null) {
+            for(Board_members member:board.getBoardMembers()) {
                 addMemberToBoard(member, board);
             }
         }
@@ -52,6 +63,8 @@ public class BoardService {
         return board;
     }
 
+
+
     public Board editBoard(Board board, Board editParams) {
         if(editParams.getOwner() != null) {
             board.setOwner(editParams.getOwner());
@@ -59,7 +72,7 @@ public class BoardService {
         if(editParams.getTitle() != null) {
             board.setTitle(editParams.getTitle());
         }
-        board.setTime_modified(Timestamp.from(Instant.now()));
+        board.setTimeModified(Timestamp.from(Instant.now()));
         return board;
     }
 

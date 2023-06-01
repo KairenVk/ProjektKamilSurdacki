@@ -40,7 +40,7 @@ public class ListRestController {
     public CollectionModel<EntityModel<TaskList>> all(@PathVariable Long boardId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new EntityNotFoundException(Board.class.getSimpleName(),boardId));
         List <EntityModel<TaskList>> lists = taskListRepository.findAllByBoard(board).stream()
-                .map(listModelAssembler::toModel).sorted(Comparator.comparingInt(o -> o.getContent().getList_order())).collect(Collectors.toList());
+                .map(listModelAssembler::toModel).sorted(Comparator.comparingInt(o -> o.getContent().getListOrder())).collect(Collectors.toList());
         return CollectionModel.of(lists, linkTo(methodOn(ListRestController.class).all(boardId)).withSelfRel());
     }
 
@@ -53,7 +53,6 @@ public class ListRestController {
     @PutMapping("/list/{listId}")
     public EntityModel<TaskList> editList(@RequestBody TaskList editedTaskList, @PathVariable Long listId) {
         TaskList taskList = taskListRepository.findById(listId).orElseThrow(() -> new EntityNotFoundException(TaskList.class.getSimpleName(), listId));
-        System.out.println(taskList.getList_order());
         taskList = taskListService.editList(taskList, editedTaskList);
         return listModelAssembler.toModel(taskList);
     }

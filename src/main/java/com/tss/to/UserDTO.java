@@ -10,9 +10,9 @@ public class UserDTO extends Credentials {
 
     private String username;
 
-    private Collection<Board_members> boards_member;
+    private Collection<Board_members> boardsJoined;
 
-    private Collection<Board> owned_boards;
+    private Collection<Board> ownedBoards;
 
     public String getUsername() {
         return username;
@@ -22,19 +22,19 @@ public class UserDTO extends Credentials {
         this.username = username;
     }
 
-    public Collection<Board_members> getBoards_member() {
-        return boards_member;
+    public Collection<Board_members> getBoardsJoined() {
+        return boardsJoined;
     }
 
-    public void setBoards_member(Collection<Board_members> boards_member) {
-        this.boards_member = boards_member;
+    public void setBoards_joined(Collection<Board_members> boards_joined) {
+        this.boardsJoined = boards_joined;
     }
 
-    public Collection<Board> getOwned_boards() {
-        return owned_boards;
+    public Collection<Board> getOwnedBoards() {
+        return ownedBoards;
     }
 
     public void setOwned_boards(Collection<Board> owned_boards) {
-        this.owned_boards = owned_boards;
+        this.ownedBoards = owned_boards;
     }
 }

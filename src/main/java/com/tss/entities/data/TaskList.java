@@ -29,10 +29,10 @@ public class TaskList {
     private String title;
 
     @Column(name = "time_created", nullable = false)
-    private Timestamp time_created;
+    private Timestamp timeCreated;
 
     @Column(name = "time_modified")
-    private Timestamp time_modified;
+    private Timestamp timeModified;
 
     @ManyToOne(cascade = CascadeType.MERGE, optional = false)
     @JoinColumn(name = "board_id", nullable = false)
@@ -44,8 +44,8 @@ public class TaskList {
     @JsonManagedReference
     private Collection<Task> tasks = new ArrayList<>();
 
-    @Column(name = "list_order")
-    private int list_order;
+    @Column(name = "list_order", nullable = false)
+    private Integer listOrder;
 
     public Collection<Task> getTasks() {
         return tasks;
@@ -63,20 +63,20 @@ public class TaskList {
         this.board = board;
     }
 
-    public Timestamp getTime_modified() {
-        return time_modified;
+    public Timestamp getTimeModified() {
+        return timeModified;
     }
 
-    public void setTime_modified(Timestamp time_modified) {
-        this.time_modified = time_modified;
+    public void setTimeModified(Timestamp timeModified) {
+        this.timeModified = timeModified;
     }
 
-    public Timestamp getTime_created() {
-        return time_created;
+    public Timestamp getTimeCreated() {
+        return timeCreated;
     }
 
-    public void setTime_created(Timestamp time_created) {
-        this.time_created = time_created;
+    public void setTimeCreated(Timestamp timeCreated) {
+        this.timeCreated = timeCreated;
     }
 
     public String getTitle() {
@@ -95,12 +95,19 @@ public class TaskList {
         this.id = id;
     }
 
-    public int getList_order() {
-        return list_order;
+    public Integer getListOrder() {
+        return listOrder;
     }
 
-    public void setList_order(int order) {
-        this.list_order = order;
+    public void setListOrder(Integer order) {
+        this.listOrder = order;
+    }
+
+    public void incrementList_order() {
+        this.listOrder++;
+    }
+
+    public void decrementList_order() {
+        this.listOrder--;
     }
 }
-

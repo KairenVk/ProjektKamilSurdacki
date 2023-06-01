@@ -1,11 +1,15 @@
 package com.tss.controllers;
 
 import com.tss.entities.data.Board;
-import com.tss.entities.data.User;
+import com.tss.entities.data.Task;
+import com.tss.entities.data.TaskList;
 import com.tss.exceptions.EntityNotFoundException;
 import com.tss.repositories.data.BoardRepository;
+import com.tss.repositories.data.TaskListRepository;
 import com.tss.repositories.data.UserRepository;
 import com.tss.services.BoardService;
+import com.tss.services.TaskListService;
+import com.tss.services.TaskService;
 import com.tss.to.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,10 +37,19 @@ public class WebController {
     private UserRepository userRepository;
 
     @Autowired
+    private TaskListRepository taskListRepository;
+
+    @Autowired
     BuildProperties buildProperties;
 
     @Autowired
     private BoardService boardService;
+
+    @Autowired
+    private TaskListService taskListService;
+
+    @Autowired
+    private TaskService taskService;
 
     @Value("${myparams.jdkversion}")
     String myjdkversion;
@@ -73,7 +86,7 @@ public class WebController {
         return "register";
     }
 
-    @GetMapping("/home")
+    @GetMapping("/boards")
     public String showBoards(Model model) {
         return "home";
     }
@@ -84,11 +97,35 @@ public class WebController {
     }
 
     @PostMapping("/addBoard")
-    public String addBoard(Model model, @ModelAttribute Board board) {
+    public String addBoard(Board board, String ownerUsername) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User owner = userRepository.findByUsername(authentication.getName()).orElseThrow();
-        board.setOwner(owner);
-        Board newBoard = boardService.addBoard(board);
+        Board newBoard = boardService.webAddBoard(board, authentication.getName());
         return "redirect:/board/"+newBoard.getId();
+    }
+
+    @GetMapping("/board/{boardId}/addListForm")
+    public String addListForm(Model model, @ModelAttribute TaskList list, @PathVariable Long boardId) {
+        model.addAttribute("board", boardRepository.findById(boardId).orElseThrow(() -> new EntityNotFoundException(Board.class.getSimpleName(), boardId)));
+        return "addListForm";
+    }
+
+    @PostMapping("/board/{boardId}/addList")
+    public String addList(TaskList list, @PathVariable Long boardId) {
+        list.setBoard(boardRepository.findById(boardId).orElseThrow(() -> new EntityNotFoundException(Board.class.getSimpleName(), boardId)));
+        taskListService.addList(list);
+        return "redirect:/board/{boardId}";
+    }
+
+    @GetMapping("/list/{listId}/addTaskForm")
+    public String addTaskForm(Model model, @ModelAttribute Task task,@PathVariable Long listId) {
+        model.addAttribute("list", taskListRepository.findById(listId).orElseThrow(() -> new EntityNotFoundException(TaskList.class.getSimpleName(), listId)));
+        return "addTaskForm";
+    }
+
+    @PostMapping("/list/{listId}/addTask")
+    public String addTask(Task task, @PathVariable Long listId) {
+        task.setTaskList(taskListRepository.findById(listId).orElseThrow(() -> new EntityNotFoundException(TaskList.class.getSimpleName(), listId)));
+        taskService.addTask(task);
+        return "redirect:/board/"+task.getTaskList().getBoard().getId();
     }
 }

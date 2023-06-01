@@ -31,15 +31,15 @@ public class UserService {
     public User addUser(UserDTO newUser) {
         User user = new User();
         user.setUsername(newUser.getUsername());
-        if (newUser.getOwned_boards() != null) {
-            for (Board board:newUser.getOwned_boards()) {
-                boardService.addBoard(board);
+        if (newUser.getOwnedBoards() != null) {
+            for (Board board:newUser.getOwnedBoards()) {
+                boardService.restAddBoard(board);
                 user.addBoard(board);
             }
         }
         userRepository.save(user);
-        if (newUser.getBoards_member() != null) {
-            for (Board_members board_member:newUser.getBoards_member()) {
+        if (newUser.getBoardsJoined() != null) {
+            for (Board_members board_member:newUser.getBoardsJoined()) {
                 boardService.addMemberToBoard(board_member);
             }
         }
