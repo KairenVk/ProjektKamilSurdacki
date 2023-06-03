@@ -1,5 +1,5 @@
 function getTaskLists() {
-    fetch('https://localhost:8443/rest/lists/getListsByBoard/' + boardId)
+    fetch('/rest/lists/getListsByBoard/' + boardId)
         .then(response => response.json())
         .then((taskLists) => {
                 console.log(taskLists)
@@ -12,7 +12,7 @@ function displayLists(data) {
     var i;
     var out = '';
     for (i = 0; i < data._embedded.taskListList.length; i++) {
-        out += `<section class="task-container col-task-list text-dark task-list-bg rounded-3 ms-2 p-2 shadow" id=` + data._embedded.taskListList[i].id + `>
+        out += `<section class="task-container col-task-list text-dark item-block-bg rounded-3 ms-2 p-2 shadow" id=` + data._embedded.taskListList[i].id + `>
                     <header class="list-header mb-3" role="button">
                             <div class="list-header-name">
                                 <div class="list-name-overlay"></div>
@@ -28,41 +28,21 @@ function displayLists(data) {
         }
         out += `</section>
                         <footer class="list-footer">
-                            <button class="btn btn-light shadow-sm container-fluid" data-toggle="modal" data-target="#list`+data._embedded.taskListList[i].id+`" role="button">Add task</button></a>
+                            <button role="button" class="add-task-button btn btn-light shadow-sm container-fluid" data-bs-toggle="modal" data-bs-target="#modal-create-task">Add task</button>
                         </footer>
-                        <div class="modal fade" id="list\`+data._embedded.taskListList[i].id+\`" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">Modal title</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form action="/list/`+data._embedded.taskListList[i].id+`/addTask" method="post">
-                                                <div class="form-group">
-                                                    <label>Title</label>
-                                                    <input type="text" th:field="*{title}" id="title" placeholder="Title"/>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Description</label>
-                                                    <input type="text" th:field="*{description}" id="description" placeholder="New task description"/>
-                                                </div>
-                                                <input type="submit" value="Add board"/>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-primary">Save changes</button>
-                                            <button type="button" class="btn btn-secondary"data-dismiss="modal">Close</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                    </section>`;
+                </section>`;
 
 
     }
     document.getElementById("task-list-container").innerHTML = out;
+    setListId();
+
+}
+
+function setListId() {
+    $( ".add-task-button" ).on( "click", function() {
+        $("#listId").val(($(this).closest('section').attr('id')));
+    })
 }
 
 window.addEventListener("load", getTaskLists, false);

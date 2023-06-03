@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <nav class="navbar navbar-expand-lg bg-light" th:fragment="navbar">
+      <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/}">Home</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" th:href="@{/boards}">Your boards</a>
+            </li>
+            <li class="nav-item" th:if="${board.title != null}">
+              <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modal-create-list" th:href="@{/board/{id}/addListForm(id=${board.id})}">New list...</a>
+            </li>
+            <li class="nav-item" th:if="${board.title == null}">
+              <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modal-create-board" th:href="@{/addBoardForm}">New board...</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </body>
+</html>

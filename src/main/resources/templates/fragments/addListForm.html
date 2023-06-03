@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="pl">
+<body th:fragment="addListForm">
+    <form th:action="@{/board/{boardId}/addList(boardId=${board.id})}" th:object="${taskList}" method="post">
+        <div class="mb-3 text-dark">
+            <label for="title" class="form-label">List name</label>
+            <input class="form-control" type="text" id="title" th:field="*{title}" placeholder="List name"/>
+        </div>
+        <input type="submit" class="btn btn-primary" value="Add list"/>
+    </form>
+</body>
+</html>

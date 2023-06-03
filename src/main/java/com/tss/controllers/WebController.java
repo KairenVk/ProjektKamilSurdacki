@@ -19,10 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 
@@ -75,7 +72,7 @@ public class WebController {
     }
 
     @GetMapping("/board/{boardId}")
-    public String getBoard(Model model, @PathVariable Long boardId) {
+    public String getBoard(Model model, @PathVariable Long boardId, @ModelAttribute TaskList taskList, @ModelAttribute Task task) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new EntityNotFoundException(Board.class.getSimpleName(), boardId));
         model.addAttribute("board", board);
         return "board";
@@ -87,12 +84,12 @@ public class WebController {
     }
 
     @GetMapping("/boards")
-    public String showBoards(Model model) {
+    public String showBoards(Model model, @ModelAttribute Board board) {
         return "home";
     }
 
     @GetMapping("/addBoardForm")
-    public String addBoardForm(Model model, @ModelAttribute Board board) {
+    public String addBoardForm(Model model) {
         return "addBoardForm";
     }
 
@@ -104,7 +101,7 @@ public class WebController {
     }
 
     @GetMapping("/board/{boardId}/addListForm")
-    public String addListForm(Model model, @ModelAttribute TaskList list, @PathVariable Long boardId) {
+    public String addListForm(Model model, @PathVariable Long boardId) {
         model.addAttribute("board", boardRepository.findById(boardId).orElseThrow(() -> new EntityNotFoundException(Board.class.getSimpleName(), boardId)));
         return "addListForm";
     }
@@ -122,8 +119,8 @@ public class WebController {
         return "addTaskForm";
     }
 
-    @PostMapping("/list/{listId}/addTask")
-    public String addTask(Task task, @PathVariable Long listId) {
+    @PostMapping("/addTask")
+    public String addTask(Task task, @RequestParam Long listId) {
         task.setTaskList(taskListRepository.findById(listId).orElseThrow(() -> new EntityNotFoundException(TaskList.class.getSimpleName(), listId)));
         taskService.addTask(task);
         return "redirect:/board/"+task.getTaskList().getBoard().getId();

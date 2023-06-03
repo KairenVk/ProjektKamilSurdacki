@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<body th:fragment="addBoardForm">
+    <form th:action="@{/addBoard}" th:object="${board}" method="post">
+        <div class="mb-3 text-dark">
+            <label for="title" class="form-label">Board name</label>
+            <input class="form-control" type="text" th:field="*{title}" id="title" placeholder="Board name"/>
+        </div>
+        <input type="submit" class="btn btn-primary" value="Add board"/>
+    </form>
+</body>
+</html>
