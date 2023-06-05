@@ -67,9 +67,9 @@ public class BoardRestController {
         return CollectionModel.of(boards, linkTo(methodOn(BoardRestController.class).getBoardsByUsername(username)).withSelfRel());
     }
 
-    @PostMapping("/addBoard")
+    @PostMapping("/board/addBoard")
     public EntityModel<Board> addBoard(@RequestBody Board board) {
-        Board newBoard = boardService.addBoard(board);
+        Board newBoard = boardService.restAddBoard(board);
         return boardModelAssembler.toModel(newBoard);
     }
 

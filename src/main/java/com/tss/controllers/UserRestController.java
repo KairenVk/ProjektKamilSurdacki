@@ -63,15 +63,14 @@ public class UserRestController {
         return userModelAssembler.toModel(user);
     }
     @PostMapping("/user/addUser")
-    public EntityModel<User> addUser(UserDTO newUser) {
+    public EntityModel<User> addUser(@RequestBody UserDTO newUser) {
         User user = userService.addUser(newUser);
         return userModelAssembler.toModel(user);
     }
 
     @PutMapping("/user/{id}")
     public User editUser(@RequestBody UserDTO modifiedUser, @PathVariable Long id) {
-        User user = userService.editUser(modifiedUser,id);
-        return user;
+        return userService.editUser(modifiedUser,id);
     }
 
     @DeleteMapping("/user/{id}")

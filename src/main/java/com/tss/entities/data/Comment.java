@@ -18,7 +18,7 @@ public class Comment {
     private String content;
 
     @Column(name = "time_created", nullable = false)
-    private Timestamp time_created;
+    private Timestamp timeCreated;
 
     @ManyToOne(cascade = CascadeType.MERGE, optional = false)
     @JoinColumn(name = "task_id", nullable = false)
@@ -45,12 +45,12 @@ public class Comment {
         this.task = task;
     }
 
-    public Timestamp getTime_created() {
-        return time_created;
+    public Timestamp getTimeCreated() {
+        return timeCreated;
     }
 
-    public void setTime_created(Timestamp time_created) {
-        this.time_created = time_created;
+    public void setTimeCreated(Timestamp timeCreated) {
+        this.timeCreated = timeCreated;
     }
 
     public String getContent() {

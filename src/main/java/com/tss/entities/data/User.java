@@ -1,12 +1,9 @@
 package com.tss.entities.data;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -26,27 +23,27 @@ public class User {
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "member", cascade = CascadeType.MERGE, orphanRemoval = true)
     @JsonIgnore
-    private Collection<Board_members> boards_member = new ArrayList<>();
+    private Collection<Board_members> boardsJoined = new ArrayList<>();
 
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("ownerToBoard")
-    private Collection<Board> owned_boards = new ArrayList<>();
+    private Collection<Board> ownedBoards = new ArrayList<>();
 
-    public Collection<Board> getOwned_boards() {
-        return owned_boards;
+    public Collection<Board> getOwnedBoards() {
+        return ownedBoards;
     }
 
-    public void setOwned_boards(Collection<Board> owned_boards) {
-        this.owned_boards = owned_boards;
+    public void setOwnedBoards(Collection<Board> ownedBoards) {
+        this.ownedBoards = ownedBoards;
     }
 
-    public Collection<Board_members> getBoards_member() {
-        return boards_member;
+    public Collection<Board_members> getBoardsJoined() {
+        return boardsJoined;
     }
 
-    public void setBoards_member(Collection<Board_members> boards_member) {
-        this.boards_member = boards_member;
+    public void setBoardsJoined(Collection<Board_members> boardsJoined) {
+        this.boardsJoined = boardsJoined;
     }
 
 
@@ -67,7 +64,7 @@ public class User {
     }
 
     public void addBoard(Board board) {
-        this.owned_boards.add(board);
+        this.ownedBoards.add(board);
     }
 
 }

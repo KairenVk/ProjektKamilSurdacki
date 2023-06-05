@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 
 @Service
 public class TaskListService {
@@ -23,7 +24,8 @@ public class TaskListService {
     private TaskService taskService;
 
     public TaskList addList(TaskList newTaskList) {
-        newTaskList.setTime_created(Timestamp.from(Instant.now()));
+        newTaskList.setTimeCreated(Timestamp.from(Instant.now()));
+        newTaskList.setListOrder(taskListRepository.findAllByBoard(newTaskList.getBoard()).size());
         taskListRepository.save(newTaskList);
         if (newTaskList.getTasks() != null) {
             for(Task task: newTaskList.getTasks()) {
@@ -34,8 +36,30 @@ public class TaskListService {
     }
 
     public TaskList editList(TaskList taskList, TaskList updatedTaskList) {
-        taskList.setTitle(updatedTaskList.getTitle());
-        taskList.setTime_modified(Timestamp.from(Instant.now()));
+        if (updatedTaskList.getTitle() != null) {
+            taskList.setTitle(updatedTaskList.getTitle());
+        }
+        if (updatedTaskList.getListOrder() != null) {
+            Integer oldPos = taskList.getListOrder();
+            Integer newPos = updatedTaskList.getListOrder();
+            System.out.println(taskList.getId());
+            if (oldPos > newPos) {
+                List<TaskList> listsInBetween= taskListRepository.findAllByListOrderLessThanAndListOrderGreaterThanEqual(oldPos, newPos);
+                for (TaskList list: listsInBetween) {
+                    System.out.println(list.getTitle());
+                    list.incrementList_order();
+                }
+            }
+            else {
+                List<TaskList> listsInBetween= taskListRepository.findAllByListOrderGreaterThanAndListOrderLessThanEqual(oldPos, newPos);
+                for (TaskList list: listsInBetween) {
+                    System.out.println(list.getTitle());
+                    list.decrementList_order();
+                }
+            }
+            taskList.setListOrder(updatedTaskList.getListOrder());
+        }
+        taskList.setTimeModified(Timestamp.from(Instant.now()));
         taskListRepository.save(taskList);
         return taskList;
     }

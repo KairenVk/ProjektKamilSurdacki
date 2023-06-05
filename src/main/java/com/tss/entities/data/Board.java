@@ -25,14 +25,14 @@ public class Board {
     private String title;
 
     @Column(name = "time_created", nullable = false)
-    private Timestamp time_created;
+    private Timestamp timeCreated;
 
     @Column(name = "time_modified")
-    private Timestamp time_modified;
+    private Timestamp timeModified;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "board", cascade = CascadeType.MERGE, orphanRemoval = true)
     @JsonIgnore
-    private Collection<Board_members> board_members = new ArrayList<>();
+    private Collection<Board_members> boardMembers = new ArrayList<>();
 
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "board", cascade = CascadeType.MERGE, orphanRemoval = true)
@@ -61,28 +61,28 @@ public class Board {
         return taskLists;
     }
 
-    public Collection<Board_members> getBoard_members() {
-        return board_members;
+    public Collection<Board_members> getBoardMembers() {
+        return boardMembers;
     }
 
-    public void setBoard_members(Collection<Board_members> board_members) {
-        this.board_members = board_members;
+    public void setBoardMembers(Collection<Board_members> boardMembers) {
+        this.boardMembers = boardMembers;
     }
 
-    public Timestamp getTime_modified() {
-        return time_modified;
+    public Timestamp getTimeModified() {
+        return timeModified;
     }
 
-    public void setTime_modified(Timestamp time_modified) {
-        this.time_modified = time_modified;
+    public void setTimeModified(Timestamp timeModified) {
+        this.timeModified = timeModified;
     }
 
-    public Timestamp getTime_created() {
-        return time_created;
+    public Timestamp getTimeCreated() {
+        return timeCreated;
     }
 
-    public void setTime_created(Timestamp time_created) {
-        this.time_created = time_created;
+    public void setTimeCreated(Timestamp timeCreated) {
+        this.timeCreated = timeCreated;
     }
 
     public String getTitle() {

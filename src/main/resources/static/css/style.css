@@ -1,0 +1,68 @@
+.board-list-block,
+.col-task-list {
+    width: 255px;
+    display: inline-block;
+    vertical-align: top;
+    margin-bottom: 20px;
+}
+.board-list-block {
+    width: 200px;
+    height: 125px;
+}
+.board-list-block:hover {
+    cursor: pointer;
+    transition: ease-out 400ms;
+    background-color: #ccc;
+}
+.board-list-block .board-list-block-content a {
+    text-decoration: none;
+    width: 100%;
+    line-height: 100%;
+}
+.board-list-block .board-list-block-content {
+    height: 100%;
+    width: 100%;
+    vertical-align: auto;
+    text-align: center;
+}
+.list-container .list-header-name {
+    height: 35px;
+    position: relative;
+}
+.list-tasks {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+.task-block {
+    background-color: #fafafa;
+}
+.item-block-bg {
+    background-color: #eee;
+}
+.task-block-placeholder {
+    border: 1px dotted black;
+    margin: 0 1em 1em 0;
+    height: 1.5em;
+    line-height: 1.2em;
+}
+.list-container {
+    white-space: nowrap;
+}
+.list-container .list-header textarea.list-name {
+    font-size: 14px;
+    height: 20px;
+    resize: none;
+    background: none;
+    border: none;
+    box-sizing: border-box;
+}
+.list-container .list-header textarea.list-name.is-editing {
+
+}
+.list-container .list-header .list-name-overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}

@@ -21,14 +21,14 @@ public class TaskService {
     TaskListRepository taskListRepository;
 
     public Task addTask(Task newTask, TaskList list) {
-        newTask.setTime_created(Timestamp.from(Instant.now()));
+        newTask.setTimeCreated(Timestamp.from(Instant.now()));
         newTask.setTaskList(list);
         taskRepository.save(newTask);
         return newTask;
     }
 
     public Task addTask(Task newTask) {
-        newTask.setTime_created(Timestamp.from(Instant.now()));
+        newTask.setTimeCreated(Timestamp.from(Instant.now()));
         taskRepository.save(newTask);
         return newTask;
     }
@@ -40,7 +40,7 @@ public class TaskService {
             task.setDescription(modifiedTask.getDescription());
         if(modifiedTask.getTitle() != null)
             task.setTitle(modifiedTask.getTitle());
-        task.setTime_modified(Timestamp.from(Instant.now()));
+        task.setTimeModified(Timestamp.from(Instant.now()));
         taskRepository.save(task);
         return task;
     }
@@ -48,6 +48,6 @@ public class TaskService {
     public void moveTask(Task task, Long taskListId) {
         task.setTaskList(taskListRepository.findById(taskListId)
                 .orElseThrow(() -> new EntityNotFoundException(TaskList.class.getSimpleName(), taskListId)));
-        task.setTime_modified(Timestamp.from(Instant.now()));
+        task.setTimeModified(Timestamp.from(Instant.now()));
     }
 }

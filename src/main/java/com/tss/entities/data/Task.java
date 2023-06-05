@@ -26,10 +26,10 @@ public class Task {
     private String description;
 
     @Column(name = "time_created", nullable = false)
-    private Timestamp time_created;
+    private Timestamp timeCreated;
 
     @Column(name = "time_modified")
-    private Timestamp time_modified;
+    private Timestamp timeModified;
 
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "task", cascade = CascadeType.MERGE, orphanRemoval = true)
@@ -70,20 +70,20 @@ public class Task {
         this.attachments = attachments;
     }
 
-    public Timestamp getTime_modified() {
-        return time_modified;
+    public Timestamp getTimeModified() {
+        return timeModified;
     }
 
-    public void setTime_modified(Timestamp time_modified) {
-        this.time_modified = time_modified;
+    public void setTimeModified(Timestamp timeModified) {
+        this.timeModified = timeModified;
     }
 
-    public Timestamp getTime_created() {
-        return time_created;
+    public Timestamp getTimeCreated() {
+        return timeCreated;
     }
 
-    public void setTime_created(Timestamp time_created) {
-        this.time_created = time_created;
+    public void setTimeCreated(Timestamp timeCreated) {
+        this.timeCreated = timeCreated;
     }
 
     public String getDescription() {
