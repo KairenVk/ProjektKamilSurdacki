@@ -7,6 +7,7 @@ import com.tss.repositories.data.TaskListRepository;
 import com.tss.repositories.data.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.HtmlUtils;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -21,6 +22,8 @@ public class TaskService {
     TaskListRepository taskListRepository;
 
     public Task addTask(Task newTask, TaskList list) {
+        newTask.setTitle(HtmlUtils.htmlEscape(newTask.getTitle()));
+        newTask.setDescription(HtmlUtils.htmlEscape(newTask.getDescription()));
         newTask.setTimeCreated(Timestamp.from(Instant.now()));
         newTask.setTaskList(list);
         taskRepository.save(newTask);
@@ -28,6 +31,8 @@ public class TaskService {
     }
 
     public Task addTask(Task newTask) {
+        newTask.setTitle(HtmlUtils.htmlEscape(newTask.getTitle()));
+        newTask.setDescription(HtmlUtils.htmlEscape(newTask.getDescription()));
         newTask.setTimeCreated(Timestamp.from(Instant.now()));
         taskRepository.save(newTask);
         return newTask;
@@ -37,9 +42,9 @@ public class TaskService {
         if(modifiedTask.getTaskList() != null)
             task.setTaskList(modifiedTask.getTaskList());
         if(modifiedTask.getDescription() != null)
-            task.setDescription(modifiedTask.getDescription());
+            task.setDescription(HtmlUtils.htmlEscape(modifiedTask.getDescription()));
         if(modifiedTask.getTitle() != null)
-            task.setTitle(modifiedTask.getTitle());
+            task.setTitle(HtmlUtils.htmlEscape(modifiedTask.getTitle()));
         task.setTimeModified(Timestamp.from(Instant.now()));
         taskRepository.save(task);
         return task;
@@ -49,5 +54,9 @@ public class TaskService {
         task.setTaskList(taskListRepository.findById(taskListId)
                 .orElseThrow(() -> new EntityNotFoundException(TaskList.class.getSimpleName(), taskListId)));
         task.setTimeModified(Timestamp.from(Instant.now()));
+    }
+
+    public void deleteTask(Long taskId) {
+        taskRepository.deleteById(taskId);
     }
 }

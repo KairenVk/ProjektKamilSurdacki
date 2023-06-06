@@ -93,6 +93,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain formLoginFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(web -> web
+                        .requestMatchers("/tss").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(withDefaults());

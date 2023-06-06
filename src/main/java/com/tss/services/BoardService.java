@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.util.HtmlUtils;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -48,6 +49,7 @@ public class BoardService {
     }
 
     private Board addBoard(@RequestBody Board board) {
+        board.setTitle(HtmlUtils.htmlEscape(board.getTitle()));
         board.getOwner().addBoard(board);
         boardRepository.save(board);
         if (board.getBoardMembers() != null) {
@@ -63,14 +65,12 @@ public class BoardService {
         return board;
     }
 
-
-
     public Board editBoard(Board board, Board editParams) {
         if(editParams.getOwner() != null) {
             board.setOwner(editParams.getOwner());
         }
         if(editParams.getTitle() != null) {
-            board.setTitle(editParams.getTitle());
+            board.setTitle(HtmlUtils.htmlEscape(editParams.getTitle()));
         }
         board.setTimeModified(Timestamp.from(Instant.now()));
         return board;

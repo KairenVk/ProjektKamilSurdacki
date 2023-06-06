@@ -9,6 +9,7 @@ import com.tss.exceptions.EntityNotFoundException;
 import com.tss.repositories.credentials.CredentialsRepository;
 import com.tss.repositories.data.BoardRepository;
 import com.tss.repositories.data.TaskListRepository;
+import com.tss.repositories.data.TaskRepository;
 import com.tss.repositories.data.UserRepository;
 import com.tss.services.BoardService;
 import com.tss.services.TaskListService;
@@ -59,6 +60,8 @@ public class WebController {
     @Autowired
     private CredentialsRepository credentialsRepository;
 
+    @Autowired
+    private TaskRepository taskRepository;
 
 
     @GetMapping("/board/{boardId}")
@@ -91,7 +94,7 @@ public class WebController {
 
     @GetMapping("/boards")
     public String showBoards(Model model, @ModelAttribute Board board) {
-        return "home";
+        return "boards";
     }
 
     @GetMapping("/addBoardForm")
@@ -130,5 +133,18 @@ public class WebController {
         task.setTaskList(taskListRepository.findById(listId).orElseThrow(() -> new EntityNotFoundException(TaskList.class.getSimpleName(), listId)));
         taskService.addTask(task);
         return "redirect:/board/"+task.getTaskList().getBoard().getId();
+    }
+    @GetMapping("/deleteList/{listId}")
+    public String deleteList(@PathVariable Long listId) {
+        Long boardId = taskListRepository.findById(listId).orElseThrow(() -> new EntityNotFoundException(TaskList.class.getSimpleName(), listId)).getBoard().getId();
+        taskListService.deleteList(listId);
+        return "redirect:/board/"+boardId;
+    }
+
+    @GetMapping("/deleteTask/{taskId}")
+    public String deleteTask(@PathVariable Long taskId) {
+        Long boardId = taskRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException(Task.class.getSimpleName(), taskId)).getTaskList().getBoard().getId();
+        taskService.deleteTask(taskId);
+        return "redirect:/board/"+boardId;
     }
 }

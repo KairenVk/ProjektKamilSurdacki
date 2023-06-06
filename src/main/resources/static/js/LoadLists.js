@@ -17,6 +17,7 @@ function displayLists(data) {
                             <div class="list-header-name">
                                 <div class="list-name-overlay"></div>
                                 <textarea class="list-name form-control">` + data._embedded.taskListList[i].title + `</textarea>
+                                <a href="/deleteList/`+data._embedded.taskListList[i].id+`" class="btn-close"></a>
                             </div>
                         </header>
                         <section class="list-tasks list-column">`;
@@ -24,6 +25,7 @@ function displayLists(data) {
             out += `<article class="task-block mb-2 p-2 rounded-2 shadow-sm" role="button">
                                 <div class="task-name">` + data._embedded.taskListList[i].tasks[j].title + `</div>
                                 <div class="task-description">` + data._embedded.taskListList[i].tasks[j].description + `</div>
+                                <a href="/deleteTask/`+data._embedded.taskListList[i].tasks[j].id+`" class="btn-close"></a>
                             </article>`;
         }
         out += `</section>

@@ -1,5 +1,6 @@
 package com.tss.controllers;
 
+import com.tss.entities.data.Board;
 import com.tss.entities.data.User;
 import com.tss.repositories.data.UserRepository;
 import com.tss.services.UserService;
@@ -41,7 +42,7 @@ public class TSSController {
     String buildVersion;
 
     @GetMapping({"/tss"})
-    public String getHome(Model model) {
+    public String getHome(Model model, Board board) {
         Instant buildTimestamp = buildProperties.getTime();
         model.addAttribute("jdkVersion",myjdkversion);
         model.addAttribute("springBootVersion",springbootversion);
@@ -59,13 +60,13 @@ public class TSSController {
     }
 
     @PostMapping({"addUser"})
-    public String tssAddUser(Model model, UserDTO newUser) {
+    public String tssAddUser(UserDTO newUser) {
         userService.addUser(newUser);
         return "redirect:/tss_users";
     }
 
     @GetMapping({"tss_deleteUser/{id}"})
-    public String tssDeleteUser(Model model, @PathVariable Long id) {
+    public String tssDeleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return "redirect:/tss_users";
     }

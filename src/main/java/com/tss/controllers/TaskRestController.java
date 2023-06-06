@@ -13,11 +13,10 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
 import java.util.List;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/rest")
@@ -68,8 +67,6 @@ public class TaskRestController {
 
     @DeleteMapping("/task/{taskId}")
     public void deleteTask(@PathVariable Long taskId) {
-        Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new EntityNotFoundException(Task.class.getSimpleName(), taskId));
-        taskRepository.delete(task);
+        taskService.deleteTask(taskId);
     }
 }
