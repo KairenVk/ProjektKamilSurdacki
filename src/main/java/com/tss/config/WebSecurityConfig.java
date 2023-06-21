@@ -65,7 +65,7 @@ public class WebSecurityConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/rest/**");
+                registry.addMapping("/rest/**").allowedOriginPatterns("http://localhost:[*]");
             }
         };
     }
@@ -74,6 +74,8 @@ public class WebSecurityConfig {
     @Order(1)
     public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors()
+                .and()
                 .csrf().disable()
                 .authorizeHttpRequests(authenticate -> authenticate
                         .requestMatchers("/rest/authenticate").permitAll()
@@ -83,7 +85,8 @@ public class WebSecurityConfig {
                 .antMatcher("/rest/**")
                 .authorizeHttpRequests(rest -> rest
                         .anyRequest().authenticated())
-                .httpBasic(withDefaults());
+                .httpBasic(withDefaults())
+                .requiresChannel().anyRequest().requiresSecure();
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
@@ -94,8 +97,12 @@ public class WebSecurityConfig {
         http
                 .authorizeHttpRequests(web -> web
                         .requestMatchers("/tss").permitAll()
+                        .requestMatchers("/registerForm").permitAll()
+                        .requestMatchers("/addUser").permitAll()
                         .anyRequest().authenticated()
                 )
+                .requiresChannel().anyRequest().requiresSecure()
+                .and()
                 .formLogin(withDefaults());
         return http.build();
     }

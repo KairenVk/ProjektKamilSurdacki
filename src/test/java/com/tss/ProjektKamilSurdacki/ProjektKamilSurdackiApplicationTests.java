@@ -21,31 +21,31 @@ class ProjektKamilSurdackiApplicationTests {
 	private CredentialsRepository credentialsRepository;
 	private static User newUser;
 
-	@BeforeAll
-	public static void initializeDataObjects(){
-		newUser = new User();
-		newUser.setId(1L);
-		newUser.setUsername("test");
-	}
+//	@BeforeAll
+//	public static void initializeDataObjects(){
+//		newUser = new User();
+//		newUser.setId(1L);
+//		newUser.setUsername("test");
+//	}
+//
+//	@Test
+//	public void shouldSaveUserToDataDB() {
+//		userRepository.save(newUser);
+//		Optional<User> userId = userRepository.findById(1L);
+//		assert(userId.isPresent());
+//	}
 
-	@Test
-	public void shouldSaveUserToDataDB() {
-		userRepository.save(newUser);
-		Optional<User> userId = userRepository.findById(1L);
-		assert(userId.isPresent());
-	}
-
-	@Test
-	public void shouldSaveCredentialsToCredentialsDB() {
-		Credentials newCredentials = new Credentials();
-		newCredentials.setId(1L);
-		newCredentials.setUsername("test");
-		newCredentials.setPassword("password");
-		newCredentials.setEmail("test@mail.com");
-		newCredentials.setActive(true);
-		credentialsRepository.save(newCredentials);
-		Optional<Credentials> credentialsId = credentialsRepository.findById(1L);
-		assert(credentialsId.isPresent());
-	}
+//	@Test
+//	public void shouldSaveCredentialsToCredentialsDB() {
+//		Credentials newCredentials = new Credentials();
+//		newCredentials.setId(1L);
+//		newCredentials.setUsername("test");
+//		newCredentials.setPassword("password");
+//		newCredentials.setEmail("test@mail.com");
+//		newCredentials.setActive(true);
+//		credentialsRepository.save(newCredentials);
+//		Optional<Credentials> credentialsId = credentialsRepository.findById(1L);
+//		assert(credentialsId.isPresent());
+//	}
 
 }

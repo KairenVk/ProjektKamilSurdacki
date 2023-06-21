@@ -42,8 +42,8 @@
 .task-block-placeholder {
     border: 1px dotted black;
     margin: 0 1em 1em 0;
-    height: 1.5em;
-    line-height: 1.2em;
+    height: 3em;
+    line-height: 2.5em;
 }
 .list-container {
     white-space: nowrap;

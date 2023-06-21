@@ -63,7 +63,12 @@ public class WebController {
     @Autowired
     private TaskRepository taskRepository;
 
-
+    
+    @GetMapping("/")
+    public String index() {
+        return "redirect:/tss";
+    }
+    
     @GetMapping("/board/{boardId}")
     public String getBoard(Model model, @PathVariable Long boardId, @ModelAttribute TaskList taskList, @ModelAttribute Task task) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new EntityNotFoundException(Board.class.getSimpleName(), boardId));
@@ -130,8 +135,7 @@ public class WebController {
 
     @PostMapping("/addTask")
     public String addTask(Task task, @RequestParam Long listId) {
-        task.setTaskList(taskListRepository.findById(listId).orElseThrow(() -> new EntityNotFoundException(TaskList.class.getSimpleName(), listId)));
-        taskService.addTask(task);
+        taskService.addTask(task, listId);
         return "redirect:/board/"+task.getTaskList().getBoard().getId();
     }
     @GetMapping("/deleteList/{listId}")

@@ -1,0 +1,2 @@
+W przypadku testowania projektu na serwerze tomcat, proszę o zmianę nazwy pliku "ProjektKamilSurdacki-0.0.1-SNAPSHOT.war" na "ROOT.war" i usunięcie/przeniesienie folderu "ROOT" z folderu "webapps".
+W ten sposób aplikacja uruchomi się bezpośrednio pod adresem https://localhost:8443/ i będzie działać poprawnie.

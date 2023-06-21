@@ -18,14 +18,6 @@
                 $(document).on('click', function() {
                     $('.list-name-overlay').removeClass('d-none');
                 });
-                $('.list-tasks').sortable({
-                    revert: true,
-                    connectWith: '.list-tasks',
-                    placeholder: "task-block-placeholder",
-                    update: function(event, ui) {
-                        // some action
-                    }
-                }).disableSelection();
                 $('.list-container').sortable({
                     helper: 'clone',
                     revert: true,

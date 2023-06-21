@@ -44,9 +44,9 @@ public class TaskRestController {
         return CollectionModel.of(tasks, linkTo(methodOn(TaskRestController.class).all(listId)).withSelfRel());
     }
 
-    @PostMapping("/task/addTask")
-    public EntityModel<Task> addTask(@RequestBody Task newTask) {
-        Task task = taskService.addTask(newTask);
+    @PostMapping("/list/{listId}/addTask")
+    public EntityModel<Task> addTask(@RequestBody Task newTask, @PathVariable Long listId) {
+        Task task = taskService.addTask(newTask, listId);
         return taskModelAssembler.toModel(task);
     }
 

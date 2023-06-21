@@ -30,7 +30,8 @@ public class TaskService {
         return newTask;
     }
 
-    public Task addTask(Task newTask) {
+    public Task addTask(Task newTask, Long listId) {
+        newTask.setTaskList(taskListRepository.findById(listId).orElseThrow(() -> new EntityNotFoundException(TaskList.class.getSimpleName(), listId)));
         newTask.setTitle(HtmlUtils.htmlEscape(newTask.getTitle()));
         newTask.setDescription(HtmlUtils.htmlEscape(newTask.getDescription()));
         newTask.setTimeCreated(Timestamp.from(Instant.now()));
