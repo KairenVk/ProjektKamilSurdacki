@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "tasklist")
@@ -42,16 +42,16 @@ public class TaskList {
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "taskList", cascade = CascadeType.MERGE, orphanRemoval = true)
     @JsonManagedReference
-    private Collection<Task> tasks = new ArrayList<>();
+    private List<Task> tasks = new ArrayList<>();
 
     @Column(name = "list_order", nullable = false)
     private Integer listOrder;
 
-    public Collection<Task> getTasks() {
+    public List<Task> getTasks() {
         return tasks;
     }
 
-    public void setTasks(Collection<Task> tasks) {
+    public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
     }
 

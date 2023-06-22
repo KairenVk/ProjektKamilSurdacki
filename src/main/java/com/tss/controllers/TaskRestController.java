@@ -13,7 +13,9 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -39,14 +41,13 @@ public class TaskRestController {
     public CollectionModel<EntityModel<Task>> all(@PathVariable Long listId) {
         TaskList taskList = taskListRepository.findById(listId).orElseThrow(() -> new EntityNotFoundException(TaskList.class.getSimpleName(), listId));
         List<EntityModel<Task>> tasks = taskRepository.findAllByTaskList(taskList).stream()
-                .map(taskModelAssembler::toModel)
-                .toList();
+                .map(taskModelAssembler::toModel).sorted(Comparator.comparingInt(o -> o.getContent().getTaskOrder())).collect(Collectors.toList());
         return CollectionModel.of(tasks, linkTo(methodOn(TaskRestController.class).all(listId)).withSelfRel());
     }
 
     @PostMapping("/list/{listId}/addTask")
     public EntityModel<Task> addTask(@RequestBody Task newTask, @PathVariable Long listId) {
-        Task task = taskService.addTask(newTask, listId);
+        Task task = taskService.addTaskListId(newTask, listId);
         return taskModelAssembler.toModel(task);
     }
 
@@ -65,8 +66,17 @@ public class TaskRestController {
         return taskModelAssembler.toModel(task);
     }
 
+    @PutMapping("/task/debug/{taskId}")
+    public EntityModel<Task> editTaskDebug(@PathVariable Long taskId, @RequestBody Task modifiedTask) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new EntityNotFoundException(Task.class.getSimpleName(), taskId));
+        task = taskService.editTaskDebug(task, modifiedTask);
+        return taskModelAssembler.toModel(task);
+    }
+
     @DeleteMapping("/task/{taskId}")
     public void deleteTask(@PathVariable Long taskId) {
-        taskService.deleteTask(taskId);
+        Task taskToDelete = taskRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException(Task.class.getSimpleName(), taskId));
+        taskService.deleteTask(taskToDelete);
     }
 }

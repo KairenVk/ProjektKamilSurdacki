@@ -2,7 +2,6 @@ function getTaskLists() {
     fetch('/rest/lists/getListsByBoard/' + boardId)
         .then(response => response.json())
         .then((taskLists) => {
-                console.log(taskLists)
                 displayLists(taskLists);
             }
         );
@@ -24,7 +23,7 @@ function displayLists(data) {
                 <section class="list-tasks list-column">`;
         for (j = 0; j < data._embedded.taskListList[i].tasks.length; j++) {
             out += `
-                <article class="task-block mb-2 p-2 rounded-2 shadow-sm">
+                <article class="task-block mb-2 p-2 rounded-2 shadow-sm" id=`+data._embedded.taskListList[i].tasks[j].id+`>
                     <div class="task-name position-relative"><span class="fs-5 mb-2 fw-bold text-break text-wrap">` + data._embedded.taskListList[i].tasks[j].title + `</span>
                         <a class="position-absolute top-0 end-0 btn btn-close fs-6" href="/deleteTask/`+data._embedded.taskListList[i].tasks[j].id+`"></a>
                     </div>
@@ -47,7 +46,16 @@ function displayLists(data) {
         connectWith: '.list-tasks',
         placeholder: "task-block-placeholder",
         update: function(event, ui) {
-            // some action
+            console.log(ui);
+            console.log(ui.item[0].parentElement.parentElement.id)
+            var json = $.ajax({
+                type: "PUT",
+                url: "/rest/task/" + ui.item[0].id,
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({taskOrder: ui.item.index(), taskList: {id: ui.item[0].parentElement.parentElement.id}}),
+                dataType: "text/json"
+            });
+            console.log(json);
         }
     }).disableSelection();
 }

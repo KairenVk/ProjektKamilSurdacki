@@ -2,6 +2,8 @@ package com.tss.controllers;
 
 import com.tss.assemblers.BoardModelAssembler;
 import com.tss.entities.data.Board;
+import com.tss.entities.data.Task;
+import com.tss.entities.data.TaskList;
 import com.tss.entities.data.User;
 import com.tss.exceptions.EntityByNameNotFoundException;
 import com.tss.exceptions.EntityNotFoundException;
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -41,6 +44,7 @@ public class BoardRestController {
         List<EntityModel<Board>> boards = boardRepository.findAll().stream()
                 .map(boardModelAssembler::toModel)
                 .toList();
+        sortTasksInBoard(boards);
 
         return CollectionModel.of(boards, linkTo(methodOn(BoardRestController.class).all()).withSelfRel());
     }
@@ -52,6 +56,7 @@ public class BoardRestController {
         List<EntityModel<Board>> boards = boardRepository.findAllByOwner(user).stream()
                 .map(boardModelAssembler::toModel)
                 .toList();
+        sortTasksInBoard(boards);
 
         return CollectionModel.of(boards, linkTo(methodOn(BoardRestController.class).getBoardsByUserId(userId)).withSelfRel());
     }
@@ -63,6 +68,7 @@ public class BoardRestController {
         List<EntityModel<Board>> boards = boardRepository.findAllByOwner(user).stream()
                 .map(boardModelAssembler::toModel)
                 .toList();
+        sortTasksInBoard(boards);
 
         return CollectionModel.of(boards, linkTo(methodOn(BoardRestController.class).getBoardsByUsername(username)).withSelfRel());
     }
@@ -98,5 +104,14 @@ public class BoardRestController {
     public EntityModel<Board> addBoardMembers(@RequestBody Collection<String> users, @PathVariable Long boardId) {
         Board board = boardService.addBoardMembersByUsernames(users, boardId);
         return boardModelAssembler.toModel(board);
+    }
+
+    private static void sortTasksInBoard(List<EntityModel<Board>> boards) {
+        for (EntityModel<Board> board : boards) {
+            Collection<TaskList> lists = board.getContent().getTaskLists();
+            for (TaskList list : lists) {
+                list.getTasks().sort(Comparator.comparingInt(Task::getTaskOrder));
+            }
+        }
     }
 }

@@ -31,7 +31,7 @@ public class TaskListService {
         taskListRepository.save(newTaskList);
         if (newTaskList.getTasks() != null) {
             for(Task task: newTaskList.getTasks()) {
-                taskService.addTask(task, newTaskList);
+                taskService.addTaskListObject(task, newTaskList);
             }
         }
         return newTaskList;
@@ -45,13 +45,13 @@ public class TaskListService {
             Integer oldPos = taskList.getListOrder();
             Integer newPos = updatedTaskList.getListOrder();
             if (oldPos > newPos) {
-                List<TaskList> listsInBetween= taskListRepository.findAllByListOrderLessThanAndListOrderGreaterThanEqual(oldPos, newPos);
+                List<TaskList> listsInBetween= taskListRepository.findAllByListOrderLessThanAndListOrderGreaterThanEqualAndBoard(oldPos, newPos, taskList.getBoard());
                 for (TaskList list: listsInBetween) {
                     list.incrementList_order();
                 }
             }
             else {
-                List<TaskList> listsInBetween= taskListRepository.findAllByListOrderGreaterThanAndListOrderLessThanEqual(oldPos, newPos);
+                List<TaskList> listsInBetween= taskListRepository.findAllByListOrderGreaterThanAndListOrderLessThanEqualAndBoard(oldPos, newPos, taskList.getBoard());
                 for (TaskList list: listsInBetween) {
                     list.decrementList_order();
                 }
@@ -63,7 +63,11 @@ public class TaskListService {
         return taskList;
     }
 
-    public void deleteList(Long listId) {
-        taskListRepository.deleteById(listId);
+    public void deleteList(TaskList listToDelete) {
+        List<TaskList> listsToChangeOrder = taskListRepository.findAllByListOrderGreaterThanAndBoard(listToDelete.getListOrder(), listToDelete.getBoard());
+        for (TaskList list: listsToChangeOrder) {
+            list.decrementList_order();
+        }
+        taskListRepository.delete(listToDelete);
     }
 }

@@ -46,6 +46,17 @@ public class Task {
     @JsonBackReference
     private TaskList taskList;
 
+    @Column(name = "task_order", nullable = false)
+    private Integer taskOrder;
+
+    public Integer getTaskOrder() {
+        return taskOrder;
+    }
+
+    public void setTaskOrder(Integer taskOrder) {
+        this.taskOrder = taskOrder;
+    }
+
     public TaskList getTaskList() {
         return taskList;
     }
@@ -108,6 +119,14 @@ public class Task {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public void incrementTaskOrder() {
+        this.taskOrder++;
+    }
+
+    public void decrementTaskOrder() {
+        this.taskOrder--;
     }
 
 }

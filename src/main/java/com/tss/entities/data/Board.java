@@ -45,6 +45,17 @@ public class Board {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User owner;
 
+    @Column(name = "board_order", nullable = false)
+    private Integer boardOrder;
+
+    public Integer getBoardOrder() {
+        return boardOrder;
+    }
+
+    public void setBoardOrder(Integer boardOrder) {
+        this.boardOrder = boardOrder;
+    }
+
     public User getOwner() {
         return owner;
     }

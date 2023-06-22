@@ -1,7 +1,9 @@
 package com.tss.controllers;
 
 import com.tss.assemblers.UserModelAssembler;
-import com.tss.to.UserDTO;
+import com.tss.entities.data.Board;
+import com.tss.entities.data.Task;
+import com.tss.entities.data.TaskList;
 import com.tss.entities.data.User;
 import com.tss.exceptions.EntityByNameNotFoundException;
 import com.tss.exceptions.EntityNotFoundException;
@@ -9,12 +11,14 @@ import com.tss.repositories.credentials.CredentialsRepository;
 import com.tss.repositories.data.UserRepository;
 import com.tss.services.CredentialsService;
 import com.tss.services.UserService;
-
+import com.tss.to.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,7 +49,15 @@ public class UserRestController {
         List<EntityModel<User>> users = userRepository.findAll().stream()
                 .map(userModelAssembler::toModel)
                 .collect(Collectors.toList());
-
+        for (EntityModel<User> user: users) {
+            Collection<Board> boards = user.getContent().getOwnedBoards();
+            for (Board board : boards) {
+                Collection<TaskList> lists = board.getTaskLists();
+                for (TaskList list: lists) {
+                    list.getTasks().sort(Comparator.comparingInt(Task::getTaskOrder));;
+                }
+            }
+        }
         return CollectionModel.of(users, linkTo(methodOn(UserRestController.class).all()).withSelfRel());
     }
 
@@ -53,6 +65,13 @@ public class UserRestController {
     public EntityModel<User> getUser(@PathVariable Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(User.class.getSimpleName(),id));
+        Collection<Board> boards = user.getOwnedBoards();
+        for (Board board: boards) {
+            Collection<TaskList> lists = board.getTaskLists();
+            for (TaskList list: lists) {
+                list.getTasks().sort(Comparator.comparingInt(Task::getTaskOrder));
+            }
+        }
         return userModelAssembler.toModel(user);
     }
 

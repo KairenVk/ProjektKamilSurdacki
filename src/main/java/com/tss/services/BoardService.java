@@ -35,21 +35,21 @@ public class BoardService {
     private TaskListService taskListService;
 
     public Board restAddBoard(@RequestBody Board board) {
-        board.setTimeCreated(Timestamp.from(Instant.now()));
         board.setOwner(userRepository.findById(board.getOwner().getId())
                 .orElseThrow(() -> new EntityNotFoundException(User.class.getSimpleName(),board.getOwner().getId())));
         return addBoard(board);
     }
 
     public Board webAddBoard(@RequestBody Board board, String ownerUsername) {
-        board.setTimeCreated(Timestamp.from(Instant.now()));
         board.setOwner(userRepository.findByUsername(ownerUsername)
                 .orElseThrow(() -> new EntityNotFoundException(User.class.getSimpleName(),board.getOwner().getId())));
         return addBoard(board);
     }
 
     private Board addBoard(@RequestBody Board board) {
+        board.setTimeCreated(Timestamp.from(Instant.now()));
         board.setTitle(HtmlUtils.htmlEscape(board.getTitle()));
+        board.setBoardOrder(boardRepository.findAllByOwner(board.getOwner()).size());
         board.getOwner().addBoard(board);
         boardRepository.save(board);
         if (board.getBoardMembers() != null) {

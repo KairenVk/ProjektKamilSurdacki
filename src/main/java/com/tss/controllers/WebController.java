@@ -17,8 +17,6 @@ import com.tss.services.TaskService;
 import com.tss.services.UserService;
 import com.tss.to.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.info.BuildProperties;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -43,9 +41,6 @@ public class WebController {
     private TaskListRepository taskListRepository;
 
     @Autowired
-    BuildProperties buildProperties;
-
-    @Autowired
     private BoardService boardService;
 
     @Autowired
@@ -53,9 +48,6 @@ public class WebController {
 
     @Autowired
     private TaskService taskService;
-
-    @Value("${myparams.jdkversion}")
-    String myjdkversion;
 
     @Autowired
     private CredentialsRepository credentialsRepository;
@@ -66,7 +58,7 @@ public class WebController {
     
     @GetMapping("/")
     public String index() {
-        return "redirect:/tss";
+        return "redirect:/boards";
     }
     
     @GetMapping("/board/{boardId}")
@@ -135,20 +127,22 @@ public class WebController {
 
     @PostMapping("/addTask")
     public String addTask(Task task, @RequestParam Long listId) {
-        taskService.addTask(task, listId);
+        taskService.addTaskListId(task, listId);
         return "redirect:/board/"+task.getTaskList().getBoard().getId();
     }
     @GetMapping("/deleteList/{listId}")
     public String deleteList(@PathVariable Long listId) {
-        Long boardId = taskListRepository.findById(listId).orElseThrow(() -> new EntityNotFoundException(TaskList.class.getSimpleName(), listId)).getBoard().getId();
-        taskListService.deleteList(listId);
+        TaskList list = taskListRepository.findById(listId).orElseThrow(() -> new EntityNotFoundException(TaskList.class.getSimpleName(), listId));
+        Long boardId = list.getBoard().getId();
+        taskListService.deleteList(list);
         return "redirect:/board/"+boardId;
     }
 
     @GetMapping("/deleteTask/{taskId}")
     public String deleteTask(@PathVariable Long taskId) {
-        Long boardId = taskRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException(Task.class.getSimpleName(), taskId)).getTaskList().getBoard().getId();
-        taskService.deleteTask(taskId);
+        Task taskToDelete = taskRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException(Task.class.getSimpleName(), taskId));
+        Long boardId = taskToDelete.getTaskList().getBoard().getId();
+        taskService.deleteTask(taskToDelete);
         return "redirect:/board/"+boardId;
     }
 }

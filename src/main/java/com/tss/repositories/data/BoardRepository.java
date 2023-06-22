@@ -9,4 +9,7 @@ import java.util.List;
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
     List<Board> findAllByOwner(User owner);
+
+    List<Board> findAllByBoardOrderGreaterThanAndBoardOrderLessThanEqualAndOwner(Integer order1, Integer order2, User owner);
+    List<Board> findAllByBoardOrderLessThanAndBoardOrderGreaterThanEqualAndOwner(Integer order1, Integer order2, User owner);
 }

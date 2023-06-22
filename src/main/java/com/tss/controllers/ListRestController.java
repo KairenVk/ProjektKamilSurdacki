@@ -2,6 +2,7 @@ package com.tss.controllers;
 
 import com.tss.assemblers.ListModelAssembler;
 import com.tss.entities.data.Board;
+import com.tss.entities.data.Task;
 import com.tss.entities.data.TaskList;
 import com.tss.exceptions.EntityNotFoundException;
 import com.tss.repositories.data.BoardRepository;
@@ -41,12 +42,16 @@ public class ListRestController {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new EntityNotFoundException(Board.class.getSimpleName(),boardId));
         List <EntityModel<TaskList>> lists = taskListRepository.findAllByBoard(board).stream()
                 .map(listModelAssembler::toModel).sorted(Comparator.comparingInt(o -> o.getContent().getListOrder())).collect(Collectors.toList());
+        for (EntityModel<TaskList> list: lists) {
+            list.getContent().getTasks().sort(Comparator.comparingInt(Task::getTaskOrder));
+        }
         return CollectionModel.of(lists, linkTo(methodOn(ListRestController.class).all(boardId)).withSelfRel());
     }
 
     @GetMapping("/list/{listId}")
     public EntityModel<TaskList> getList(@PathVariable Long listId) {
         TaskList taskList = taskListRepository.findById(listId).orElseThrow(() -> new EntityNotFoundException(TaskList.class.getSimpleName(), listId));
+        taskList.getTasks().sort(Comparator.comparingInt(Task::getTaskOrder));
         return listModelAssembler.toModel(taskList);
     }
 
