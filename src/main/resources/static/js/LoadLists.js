@@ -46,16 +46,20 @@ function displayLists(data) {
         connectWith: '.list-tasks',
         placeholder: "task-block-placeholder",
         update: function(event, ui) {
-            console.log(ui);
-            console.log(ui.item[0].parentElement.parentElement.id)
-            var json = $.ajax({
-                type: "PUT",
-                url: "/rest/task/" + ui.item[0].id,
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({taskOrder: ui.item.index(), taskList: {id: ui.item[0].parentElement.parentElement.id}}),
-                dataType: "text/json"
-            });
-            console.log(json);
+            if (this === ui.item.parent()[0]) {
+                console.log(ui);
+                console.log(ui.item[0].parentElement.parentElement.id);
+                console.log(ui.item.index());
+                var json = $.ajax({
+                    type: "PUT",
+                    url: "/rest/task/" + ui.item[0].id,
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({taskOrder: ui.item.index(), taskList: {id: ui.item[0].parentElement.parentElement.id}}),
+                    dataType: "text/json"
+                });
+                console.log(json);
+            }
+
         }
     }).disableSelection();
 }

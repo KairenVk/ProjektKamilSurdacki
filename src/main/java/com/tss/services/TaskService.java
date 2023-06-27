@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class TaskService {
@@ -42,26 +43,28 @@ public class TaskService {
         return newTask;
     }
 
-    public Task editTask(Task task, Task newTask) {
-        if(newTask.getTaskList() != null) {
-            Long newListId = newTask.getTaskList().getId();
+    public Task editTask(Task task, Task modifiedTask) {
+        Long newListId = modifiedTask.getTaskList().getId();
+        TaskList newList = taskListRepository.findById(newListId).orElseThrow(() -> new EntityNotFoundException(TaskList.class.getSimpleName(), newListId));
+        if(modifiedTask.getDescription() != null)
+            task.setDescription(HtmlUtils.htmlEscape(modifiedTask.getDescription()));
+        if(modifiedTask.getTitle() != null)
+            task.setTitle(HtmlUtils.htmlEscape(modifiedTask.getTitle()));
+        if(!Objects.equals(task.getTaskList().getId(), modifiedTask.getTaskList().getId()) && !Objects.equals(task.getTaskOrder(), modifiedTask.getTaskOrder())) {
+            decrementTaskOrders(task.getTaskList(), task.getTaskOrder());
+            incrementTaskOrders(newList, modifiedTask.getTaskOrder());
+            task.setTaskList(newList);
+            task.setTaskOrder(modifiedTask.getTaskOrder());
+        }
+        else if(!Objects.equals(task.getTaskList().getId(), modifiedTask.getTaskList().getId()) && Objects.equals(task.getTaskOrder(), modifiedTask.getTaskOrder())) {
             TaskList currentList = task.getTaskList();
-            TaskList newList = taskListRepository.findById(newListId).orElseThrow(() -> new EntityNotFoundException(TaskList.class.getSimpleName(), newListId));
-            task.setTaskList(null);
-            updateTaskOrder(currentList, task.getTaskOrder(),false);
-            updateTaskOrder(newList, task.getTaskOrder(),true);
+            decrementTaskOrders(currentList, task.getTaskOrder());
+            incrementTaskOrders(newList, task.getTaskOrder());
             task.setTaskList(newList);
         }
-        if(newTask.getDescription() != null)
-            task.setDescription(HtmlUtils.htmlEscape(newTask.getDescription()));
-        if(newTask.getTitle() != null)
-            task.setTitle(HtmlUtils.htmlEscape(newTask.getTitle()));
-//        if(newTask.getTaskOrder() != null) {
-//            if (task.getTaskOrder() < newTask.getTaskOrder())
-//                updateTaskOrder(task, newTask.getTaskOrder(), false);
-//            else
-//                updateTaskOrder(task, newTask.getTaskOrder(), true);
-//        }
+        else if(!Objects.equals(task.getTaskOrder(), modifiedTask.getTaskOrder())) {
+            updateTaskOrder(task, modifiedTask.getTaskOrder(), task.getTaskOrder() > modifiedTask.getTaskOrder());
+        }
         task.setTimeModified(Timestamp.from(Instant.now()));
         taskRepository.save(task);
         return task;
@@ -75,29 +78,36 @@ public class TaskService {
         taskRepository.delete(taskToDelete);
     }
 
-    private void updateTaskOrder(TaskList list, Integer taskOrder, boolean increment) {
+    private void decrementTaskOrders(TaskList list, Integer taskOrder) {
         List<Task> tasksToUpdate = taskRepository.findAllByTaskOrderGreaterThanAndTaskList(taskOrder, list);
+
+        for (Task taskToUpdate: tasksToUpdate) {
+                taskToUpdate.decrementTaskOrder();
+        }
+    }
+
+    private void incrementTaskOrders(TaskList list, Integer taskOrder) {
+        List<Task> tasksToUpdate = taskRepository.findAllByTaskOrderGreaterThanEqualAndTaskList(taskOrder, list);
+
+        for (Task taskToUpdate: tasksToUpdate) {
+            taskToUpdate.incrementTaskOrder();
+        }
+    }
+
+    private void updateTaskOrder(Task task, Integer newTaskOrder, boolean increment) {
+        List<Task> tasksToUpdate;
+        if (increment) {
+            tasksToUpdate = taskRepository.findAllByTaskOrderLessThanAndTaskOrderGreaterThanEqualAndTaskList(task.getTaskOrder(), newTaskOrder, task.getTaskList());
+        }
+        else {
+            tasksToUpdate = taskRepository.findAllByTaskOrderGreaterThanAndTaskOrderLessThanEqualAndTaskList(task.getTaskOrder(), newTaskOrder, task.getTaskList());
+        }
+
         for (Task taskToUpdate: tasksToUpdate) {
             if (increment)
                 taskToUpdate.incrementTaskOrder();
             else
                 taskToUpdate.decrementTaskOrder();
-        }
-    }
-
-    private void updateTaskOrder(Task task, Integer newTaskOrder, boolean increment) {
-        task.setTaskOrder(-1);
-        if (increment) {
-            List<Task> tasksToUpdate = taskRepository.findAllByTaskOrderLessThanAndTaskOrderGreaterThanEqualAndTaskList(task.getTaskOrder(), newTaskOrder, task.getTaskList());
-            for (Task taskToUpdate: tasksToUpdate) {
-                taskToUpdate.incrementTaskOrder();
-            }
-        }
-        else {
-            List<Task> tasksToUpdate = taskRepository.findAllByTaskOrderGreaterThanAndTaskOrderLessThanEqualAndTaskList(task.getTaskOrder(), newTaskOrder, task.getTaskList());
-            for (Task taskToUpdate: tasksToUpdate) {
-                taskToUpdate.decrementTaskOrder();
-            }
         }
         task.setTaskOrder(newTaskOrder);
     }

@@ -89,6 +89,12 @@ public class WebController {
         return "redirect:/tss_users";
     }
 
+    @PostMapping("addUser")
+    public String addUser(UserDTO userDTO) {
+        userService.addUser(userDTO);
+        return "boards";
+    }
+
     @GetMapping("/boards")
     public String showBoards(Model model, @ModelAttribute Board board) {
         return "boards";

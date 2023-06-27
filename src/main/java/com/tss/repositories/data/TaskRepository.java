@@ -14,4 +14,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findAllByTaskOrderLessThanAndTaskOrderGreaterThanEqualAndTaskList(Integer order1, Integer order2, TaskList list);
 
     List<Task> findAllByTaskOrderGreaterThanAndTaskList(Integer order, TaskList list);
+
+    List<Task> findAllByTaskOrderGreaterThanEqualAndTaskList(Integer order, TaskList list);
 }
