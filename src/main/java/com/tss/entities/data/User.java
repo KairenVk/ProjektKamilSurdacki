@@ -17,7 +17,7 @@ public class User {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "username", nullable = false, length = 20)
+    @Column(name = "username", nullable = false, unique = true, length = 20)
     private String username;
 
     @LazyCollection(LazyCollectionOption.FALSE)

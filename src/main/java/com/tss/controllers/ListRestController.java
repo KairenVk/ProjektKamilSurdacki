@@ -7,6 +7,7 @@ import com.tss.entities.data.TaskList;
 import com.tss.exceptions.EntityNotFoundException;
 import com.tss.repositories.data.BoardRepository;
 import com.tss.repositories.data.TaskListRepository;
+import com.tss.services.AuthorizationService;
 import com.tss.services.TaskListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
@@ -36,6 +37,9 @@ public class ListRestController {
     @Autowired
     private ListModelAssembler listModelAssembler;
 
+    @Autowired
+    private AuthorizationService authorizationService;
+
 
     @GetMapping("/lists/getListsByBoard/{boardId}")
     public CollectionModel<EntityModel<TaskList>> all(@PathVariable Long boardId) {
@@ -58,6 +62,7 @@ public class ListRestController {
     @PutMapping("/list/{listId}")
     public EntityModel<TaskList> editList(@RequestBody TaskList editedTaskList, @PathVariable Long listId) {
         TaskList taskList = taskListRepository.findById(listId).orElseThrow(() -> new EntityNotFoundException(TaskList.class.getSimpleName(), listId));
+        authorizationService.isAuthorized(taskList.getBoard().getOwner().getId());
         taskList = taskListService.editList(taskList, editedTaskList);
         return listModelAssembler.toModel(taskList);
     }
@@ -65,6 +70,7 @@ public class ListRestController {
     @DeleteMapping("/list/{listId}")
     public void deleteList(@PathVariable("listId") Long listId) {
         TaskList taskList = taskListRepository.findById(listId).orElseThrow(() -> new EntityNotFoundException(TaskList.class.getSimpleName(), listId));
+        authorizationService.isAuthorized(taskList.getBoard().getOwner().getId());
         taskListRepository.delete(taskList);
     }
 
@@ -72,6 +78,7 @@ public class ListRestController {
     public EntityModel<TaskList> addList(@PathVariable Long boardId, @RequestBody TaskList newTaskList) {
         newTaskList.setBoard(boardRepository.findById(boardId)
                 .orElseThrow(() -> new EntityNotFoundException(Board.class.getSimpleName(),boardId)));
+        authorizationService.isAuthorized(newTaskList.getBoard().getOwner().getId());
         TaskList taskList = taskListService.addList(newTaskList);
         return listModelAssembler.toModel(taskList);
     }

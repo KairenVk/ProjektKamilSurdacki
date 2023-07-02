@@ -1,7 +1,7 @@
 package com.tss.services;
 
 import com.tss.assemblers.UserModelAssembler;
-import com.tss.to.UserDTO;
+import com.tss.dto.UserDTO;
 import com.tss.entities.data.Board;
 import com.tss.entities.data.Board_members;
 import com.tss.entities.data.User;
@@ -31,13 +31,12 @@ public class UserService {
     public User addUser(UserDTO newUser) {
         User user = new User();
         user.setUsername(newUser.getUsername());
+        user = userRepository.save(user);
         if (newUser.getOwnedBoards() != null) {
             for (Board board:newUser.getOwnedBoards()) {
-                boardService.restAddBoard(board);
-                user.addBoard(board);
+                boardService.webAddBoard(board, user.getUsername());
             }
         }
-        userRepository.save(user);
         if (newUser.getBoardsJoined() != null) {
             for (Board_members board_member:newUser.getBoardsJoined()) {
                 boardService.addMemberToBoard(board_member);
@@ -50,7 +49,8 @@ public class UserService {
 
     public User editUser(@RequestBody UserDTO editForm, Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(User.class.getSimpleName(),id));
-        user.setUsername(editForm.getUsername());
+        if (editForm.getUsername() != null)
+            user.setUsername(editForm.getUsername());
         credentialsService.editCredentials(editForm,id);
         return user;
     }

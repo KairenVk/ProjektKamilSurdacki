@@ -2,6 +2,7 @@ package com.tss.config;
 
 import com.tss.filters.JwtRequestFilter;
 import com.tss.services.JwtUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +15,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -40,18 +40,17 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
     }
 
+    @Autowired
     public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
         auth.jdbcAuthentication()
                 .dataSource(dataSourceAuth)
                 .usersByUsernameQuery("select username, password, active from credentials where username=?")
                 .authoritiesByUsernameQuery("select username, user_role from users_roles where username=?");
         auth.userDetailsService(jwtUserDetailsService);
-//        auth.inMemoryAuthentication()
-//                .withUser("admin").password("password").roles("ADMIN");
     }
 
     @Bean
@@ -65,7 +64,7 @@ public class WebSecurityConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/rest/**").allowedOriginPatterns("http://localhost:[*]");
+                registry.addMapping("/rest/**").allowedOriginPatterns("**").allowedMethods("GET","POST","PUT","DELETE");
             }
         };
     }

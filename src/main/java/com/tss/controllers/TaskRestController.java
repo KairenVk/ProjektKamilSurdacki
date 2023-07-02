@@ -4,9 +4,9 @@ import com.tss.assemblers.TaskModelAssembler;
 import com.tss.entities.data.Task;
 import com.tss.entities.data.TaskList;
 import com.tss.exceptions.EntityNotFoundException;
-import com.tss.repositories.data.BoardRepository;
 import com.tss.repositories.data.TaskListRepository;
 import com.tss.repositories.data.TaskRepository;
+import com.tss.services.AuthorizationService;
 import com.tss.services.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
@@ -31,11 +31,12 @@ public class TaskRestController {
 
     @Autowired
     private TaskModelAssembler taskModelAssembler;
-    @Autowired
-    private BoardRepository boardRepository;
 
     @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private AuthorizationService authorizationService;
 
     @GetMapping("/tasks/getTasksByList/{listId}")
     public CollectionModel<EntityModel<Task>> all(@PathVariable Long listId) {
@@ -48,6 +49,7 @@ public class TaskRestController {
     @PostMapping("/list/{listId}/addTask")
     public EntityModel<Task> addTask(@RequestBody Task newTask, @PathVariable Long listId) {
         Task task = taskService.addTaskListId(newTask, listId);
+        authorizationService.isAuthorized(task.getTaskList().getBoard().getOwner().getId());
         return taskModelAssembler.toModel(task);
     }
 
@@ -62,6 +64,7 @@ public class TaskRestController {
     public EntityModel<Task> editTask(@PathVariable Long taskId, @RequestBody Task modifiedTask) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException(Task.class.getSimpleName(), taskId));
+        authorizationService.isAuthorized(task.getTaskList().getBoard().getOwner().getId());
         task = taskService.editTask(task, modifiedTask);
         return taskModelAssembler.toModel(task);
     }
@@ -77,6 +80,7 @@ public class TaskRestController {
     @DeleteMapping("/task/{taskId}")
     public void deleteTask(@PathVariable Long taskId) {
         Task taskToDelete = taskRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException(Task.class.getSimpleName(), taskId));
+        authorizationService.isAuthorized(taskToDelete.getTaskList().getBoard().getOwner().getId());
         taskService.deleteTask(taskToDelete);
     }
 }

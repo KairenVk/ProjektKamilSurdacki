@@ -44,26 +44,30 @@ public class TaskService {
     }
 
     public Task editTask(Task task, Task modifiedTask) {
-        Long newListId = modifiedTask.getTaskList().getId();
-        TaskList newList = taskListRepository.findById(newListId).orElseThrow(() -> new EntityNotFoundException(TaskList.class.getSimpleName(), newListId));
         if(modifiedTask.getDescription() != null)
             task.setDescription(HtmlUtils.htmlEscape(modifiedTask.getDescription()));
         if(modifiedTask.getTitle() != null)
             task.setTitle(HtmlUtils.htmlEscape(modifiedTask.getTitle()));
-        if(!Objects.equals(task.getTaskList().getId(), modifiedTask.getTaskList().getId()) && !Objects.equals(task.getTaskOrder(), modifiedTask.getTaskOrder())) {
-            decrementTaskOrders(task.getTaskList(), task.getTaskOrder());
-            incrementTaskOrders(newList, modifiedTask.getTaskOrder());
-            task.setTaskList(newList);
-            task.setTaskOrder(modifiedTask.getTaskOrder());
+        if (modifiedTask.getTaskList() != null) {
+            Long newListId = modifiedTask.getTaskList().getId();
+            TaskList newList = taskListRepository.findById(newListId).orElseThrow(() -> new EntityNotFoundException(TaskList.class.getSimpleName(), newListId));
+
+            if (!Objects.equals(task.getTaskList().getId(), modifiedTask.getTaskList().getId()) && !Objects.equals(task.getTaskOrder(), modifiedTask.getTaskOrder())) {
+                decrementTaskOrders(task.getTaskList(), task.getTaskOrder());
+                incrementTaskOrders(newList, modifiedTask.getTaskOrder());
+                task.setTaskList(newList);
+                task.setTaskOrder(modifiedTask.getTaskOrder());
+            } else if (!Objects.equals(task.getTaskList().getId(), modifiedTask.getTaskList().getId()) && Objects.equals(task.getTaskOrder(), modifiedTask.getTaskOrder())) {
+                TaskList currentList = task.getTaskList();
+                decrementTaskOrders(currentList, task.getTaskOrder());
+                incrementTaskOrders(newList, task.getTaskOrder());
+                task.setTaskList(newList);
+            }
         }
-        else if(!Objects.equals(task.getTaskList().getId(), modifiedTask.getTaskList().getId()) && Objects.equals(task.getTaskOrder(), modifiedTask.getTaskOrder())) {
-            TaskList currentList = task.getTaskList();
-            decrementTaskOrders(currentList, task.getTaskOrder());
-            incrementTaskOrders(newList, task.getTaskOrder());
-            task.setTaskList(newList);
-        }
-        else if(!Objects.equals(task.getTaskOrder(), modifiedTask.getTaskOrder())) {
-            updateTaskOrder(task, modifiedTask.getTaskOrder(), task.getTaskOrder() > modifiedTask.getTaskOrder());
+        if (modifiedTask.getTaskOrder() != null) {
+            if (!Objects.equals(task.getTaskOrder(), modifiedTask.getTaskOrder())) {
+                updateTaskOrder(task, modifiedTask.getTaskOrder(), task.getTaskOrder() > modifiedTask.getTaskOrder());
+            }
         }
         task.setTimeModified(Timestamp.from(Instant.now()));
         taskRepository.save(task);

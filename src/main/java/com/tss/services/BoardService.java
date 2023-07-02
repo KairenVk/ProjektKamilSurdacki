@@ -5,13 +5,15 @@ import com.tss.entities.data.Board_members;
 import com.tss.entities.data.TaskList;
 import com.tss.entities.data.User;
 import com.tss.exceptions.EntityNotFoundException;
+import com.tss.exceptions.UnauthorizedException;
 import com.tss.repositories.data.BoardRepository;
 import com.tss.repositories.data.Board_membersRepository;
 import com.tss.repositories.data.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.util.HtmlUtils;
 
 import java.sql.Timestamp;
@@ -34,19 +36,26 @@ public class BoardService {
     @Autowired
     private TaskListService taskListService;
 
-    public Board restAddBoard(@RequestBody Board board) {
-        board.setOwner(userRepository.findById(board.getOwner().getId())
-                .orElseThrow(() -> new EntityNotFoundException(User.class.getSimpleName(),board.getOwner().getId())));
+    public Board newUserAddBoard(Board board, User user) {
+        board.setOwner(user);
         return addBoard(board);
     }
 
-    public Board webAddBoard(@RequestBody Board board, String ownerUsername) {
+    public Board restAddBoard(Board board) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        board.setOwner(userRepository.findByUsername(currentPrincipalName)
+                .orElseThrow(UnauthorizedException::new));
+        return addBoard(board);
+    }
+
+    public Board webAddBoard(Board board, String ownerUsername) {
         board.setOwner(userRepository.findByUsername(ownerUsername)
                 .orElseThrow(() -> new EntityNotFoundException(User.class.getSimpleName(),board.getOwner().getId())));
         return addBoard(board);
     }
 
-    private Board addBoard(@RequestBody Board board) {
+    private Board addBoard(Board board) {
         board.setTimeCreated(Timestamp.from(Instant.now()));
         board.setTitle(HtmlUtils.htmlEscape(board.getTitle()));
         board.setBoardOrder(boardRepository.findAllByOwner(board.getOwner()).size());

@@ -11,11 +11,8 @@ import com.tss.repositories.data.BoardRepository;
 import com.tss.repositories.data.TaskListRepository;
 import com.tss.repositories.data.TaskRepository;
 import com.tss.repositories.data.UserRepository;
-import com.tss.services.BoardService;
-import com.tss.services.TaskListService;
-import com.tss.services.TaskService;
-import com.tss.services.UserService;
-import com.tss.to.UserDTO;
+import com.tss.services.*;
+import com.tss.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -55,6 +52,9 @@ public class WebController {
     @Autowired
     private TaskRepository taskRepository;
 
+    @Autowired
+    private AuthorizationService authorizationService;
+
     
     @GetMapping("/")
     public String index() {
@@ -65,7 +65,10 @@ public class WebController {
     public String getBoard(Model model, @PathVariable Long boardId, @ModelAttribute TaskList taskList, @ModelAttribute Task task) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new EntityNotFoundException(Board.class.getSimpleName(), boardId));
         model.addAttribute("board", board);
-        return "board";
+        if(authorizationService.isWebAuthorized(board.getOwner().getId()))
+            return "board";
+        else
+            return "redirect:/boards";
     }
 
     @GetMapping("/registerForm")

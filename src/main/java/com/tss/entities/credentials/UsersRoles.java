@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "users_roles")
-public class Users_roles {
+public class UsersRoles {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -12,25 +12,25 @@ public class Users_roles {
 
 
     @Column(name = "user_role", nullable = false)
-    private String user_role;
+    private String userRole;
 
-    @Column(name = "login", nullable = false)
-    private String login;
+    @Column(name = "username", nullable = false)
+    private String username;
 
-    public String getLogin() {
-        return login;
+    public String getUsername() {
+        return username;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public String getUser_role() {
-        return user_role;
+    public String getUserRole() {
+        return userRole;
     }
 
-    public void setUser_role(String user_role) {
-        this.user_role = user_role;
+    public void setUserRole(String userRole) {
+        this.userRole = userRole;
     }
 
     public Long getId() {

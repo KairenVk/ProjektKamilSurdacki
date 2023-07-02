@@ -1,20 +1,20 @@
 package com.tss.controllers;
 
 import com.tss.assemblers.UserModelAssembler;
+import com.tss.dto.UserDTO;
 import com.tss.entities.data.Board;
 import com.tss.entities.data.Task;
 import com.tss.entities.data.TaskList;
 import com.tss.entities.data.User;
 import com.tss.exceptions.EntityByNameNotFoundException;
 import com.tss.exceptions.EntityNotFoundException;
-import com.tss.repositories.credentials.CredentialsRepository;
 import com.tss.repositories.data.UserRepository;
-import com.tss.services.CredentialsService;
+import com.tss.services.AuthorizationService;
 import com.tss.services.UserService;
-import com.tss.to.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -27,22 +27,20 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/rest")
+@Transactional
 public class UserRestController {
 
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
-    private CredentialsRepository credentialsRepository;
-
-    @Autowired
     private UserService userService;
 
     @Autowired
-    private CredentialsService credentialsService;
+    private UserModelAssembler userModelAssembler;
 
     @Autowired
-    private UserModelAssembler userModelAssembler;
+    private AuthorizationService authorizationService;
 
     @GetMapping("/users")
     public CollectionModel<EntityModel<User>> all() {
@@ -89,11 +87,13 @@ public class UserRestController {
 
     @PutMapping("/user/{id}")
     public User editUser(@RequestBody UserDTO modifiedUser, @PathVariable Long id) {
+        authorizationService.isAuthorized(id);
         return userService.editUser(modifiedUser,id);
     }
 
     @DeleteMapping("/user/{id}")
     public void deleteUser(@PathVariable Long id) {
+        authorizationService.isAuthorized(id);
         userService.deleteUser(id);
     }
 

@@ -1,4 +1,4 @@
-package com.tss.to;
+package com.tss.dto;
 
 import com.tss.entities.credentials.Credentials;
 import com.tss.entities.data.Board;
