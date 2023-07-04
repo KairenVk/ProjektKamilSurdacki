@@ -19,9 +19,7 @@ public class AuthorizationService {
     public void isAuthorized(Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
-        System.out.println(currentPrincipalName);
         User user = userRepository.findByUsername(currentPrincipalName).orElseThrow(UnauthorizedException::new);
-        System.out.println(user.getUsername()   );
         if ( !user.getId().equals(id)) {
             throw new UnauthorizedException();
         }
