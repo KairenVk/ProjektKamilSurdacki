@@ -39,7 +39,7 @@ public class CredentialsService {
 
     public Credentials editCredentials(@RequestBody UserDTO editForm, Long userId) {
         Credentials credentials = credentialsRepository.findById(userId).orElseThrow();
-        if (editForm.getUsername() != null)
+        if (editForm.getUsername() != null && !editForm.getUsername().isEmpty())
             credentials.setUsername(editForm.getUsername());
         if (editForm.getPassword() != null)
             credentials.setPassword(bCryptPasswordEncoder.encode(editForm.getPassword()));
@@ -48,7 +48,7 @@ public class CredentialsService {
         return credentials;
     }
 
-    public void deleteCredentials(Long id) {
-        credentialsRepository.deleteById(id);
+    public void deleteCredentials(String username) {
+        credentialsRepository.deleteByUsername(username);
     }
 }

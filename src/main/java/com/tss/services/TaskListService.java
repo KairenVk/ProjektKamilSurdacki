@@ -2,8 +2,8 @@ package com.tss.services;
 
 import com.tss.entities.data.Task;
 import com.tss.entities.data.TaskList;
+import com.tss.exceptions.MissingParameterException;
 import com.tss.repositories.data.TaskListRepository;
-import com.tss.repositories.data.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.HtmlUtils;
@@ -19,12 +19,11 @@ public class TaskListService {
     private TaskListRepository taskListRepository;
 
     @Autowired
-    private TaskRepository taskRepository;
-
-    @Autowired
     private TaskService taskService;
 
     public TaskList addList(TaskList newTaskList) {
+        if(newTaskList.getTitle() == null || newTaskList.getTitle().isEmpty())
+            throw new MissingParameterException("title");
         newTaskList.setTitle(HtmlUtils.htmlEscape(newTaskList.getTitle()));
         newTaskList.setTimeCreated(Timestamp.from(Instant.now()));
         newTaskList.setListOrder(taskListRepository.findAllByBoard(newTaskList.getBoard()).size());
@@ -38,7 +37,7 @@ public class TaskListService {
     }
 
     public TaskList editList(TaskList taskList, TaskList updatedTaskList) {
-        if (updatedTaskList.getTitle() != null) {
+        if (updatedTaskList.getTitle() != null && !updatedTaskList.getTitle().isEmpty()) {
             taskList.setTitle(HtmlUtils.htmlEscape(updatedTaskList.getTitle()));
         }
         if (updatedTaskList.getListOrder() != null) {

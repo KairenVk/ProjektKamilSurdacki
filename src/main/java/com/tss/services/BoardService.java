@@ -5,6 +5,7 @@ import com.tss.entities.data.Board_members;
 import com.tss.entities.data.TaskList;
 import com.tss.entities.data.User;
 import com.tss.exceptions.EntityNotFoundException;
+import com.tss.exceptions.MissingParameterException;
 import com.tss.exceptions.UnauthorizedException;
 import com.tss.repositories.data.BoardRepository;
 import com.tss.repositories.data.Board_membersRepository;
@@ -36,11 +37,6 @@ public class BoardService {
     @Autowired
     private TaskListService taskListService;
 
-    public Board newUserAddBoard(Board board, User user) {
-        board.setOwner(user);
-        return addBoard(board);
-    }
-
     public Board restAddBoard(Board board) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
@@ -56,6 +52,8 @@ public class BoardService {
     }
 
     private Board addBoard(Board board) {
+        if(board.getTitle() == null || board.getTitle().isEmpty())
+            throw new MissingParameterException("title");
         board.setTimeCreated(Timestamp.from(Instant.now()));
         board.setTitle(HtmlUtils.htmlEscape(board.getTitle()));
         board.setBoardOrder(boardRepository.findAllByOwner(board.getOwner()).size());
@@ -78,16 +76,11 @@ public class BoardService {
         if(editParams.getOwner() != null) {
             board.setOwner(editParams.getOwner());
         }
-        if(editParams.getTitle() != null) {
+        if(editParams.getTitle() != null && !editParams.getTitle().isEmpty()) {
             board.setTitle(HtmlUtils.htmlEscape(editParams.getTitle()));
         }
         board.setTimeModified(Timestamp.from(Instant.now()));
         return board;
-    }
-
-    public void addListToBoard(TaskList taskList) {
-        Board board = taskList.getBoard();
-        board.addTaskList(taskList);
     }
 
     public void deleteBoard(Board board) {

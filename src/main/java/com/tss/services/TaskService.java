@@ -3,6 +3,7 @@ package com.tss.services;
 import com.tss.entities.data.Task;
 import com.tss.entities.data.TaskList;
 import com.tss.exceptions.EntityNotFoundException;
+import com.tss.exceptions.MissingParameterException;
 import com.tss.repositories.data.TaskListRepository;
 import com.tss.repositories.data.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,8 @@ public class TaskService {
     }
 
     public Task addTask(Task newTask) {
+        if(newTask.getTitle() == null || newTask.getTitle().isEmpty())
+            throw new MissingParameterException("title");
         newTask.setTitle(HtmlUtils.htmlEscape(newTask.getTitle()));
         newTask.setDescription(HtmlUtils.htmlEscape(newTask.getDescription()));
         newTask.setTimeCreated(Timestamp.from(Instant.now()));

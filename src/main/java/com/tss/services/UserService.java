@@ -1,11 +1,12 @@
 package com.tss.services;
 
-import com.tss.assemblers.UserModelAssembler;
 import com.tss.dto.UserDTO;
 import com.tss.entities.data.Board;
 import com.tss.entities.data.Board_members;
 import com.tss.entities.data.User;
 import com.tss.exceptions.EntityNotFoundException;
+import com.tss.exceptions.MissingParameterException;
+import com.tss.exceptions.UserExistsException;
 import com.tss.repositories.data.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,9 +27,10 @@ public class UserService {
     private BoardService boardService;
 
     @Autowired
-    private UserModelAssembler userModelAssembler;
+    private AuthorizationService authorizationService;
 
     public User addUser(UserDTO newUser) {
+        validateInput(newUser);
         User user = new User();
         user.setUsername(newUser.getUsername());
         user = userRepository.save(user);
@@ -48,21 +50,37 @@ public class UserService {
     }
 
     public User editUser(@RequestBody UserDTO editForm, Long id) {
+        authorizationService.isAuthorized(id);
         User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(User.class.getSimpleName(),id));
-        if (editForm.getUsername() != null)
+
+        if (editForm.getUsername() != null && !editForm.getUsername().isEmpty()) {
+            if (userRepository.existsByUsername(editForm.getUsername()))
+                throw new UserExistsException();
             user.setUsername(editForm.getUsername());
+        }
         credentialsService.editCredentials(editForm,id);
         return user;
     }
 
     public void deleteUser(Long id) {
-        userRepository.delete(userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(User.class.getSimpleName(), id)));
-        credentialsService.deleteCredentials(id);
+        authorizationService.isAuthorized(id);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(User.class.getSimpleName(), id));
+        userRepository.delete(user);
+        credentialsService.deleteCredentials(user.getUsername());
     }
 
-    public void addOwnedBoardToUser(Board board) {
-        User user = board.getOwner();
-        user.addBoard(board);
+    private void validateInput(UserDTO user) {
+        if (userRepository.existsByUsername(user.getUsername()))
+            throw new UserExistsException();
+        if (user.getUsername() == null || user.getUsername().isEmpty()) {
+            throw new MissingParameterException("username");
+        }
+        if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            throw new MissingParameterException("password");
+        }
+        if (user.getEmail() == null || user.getEmail().isEmpty()) {
+            throw new MissingParameterException("email");
+        }
     }
 }
