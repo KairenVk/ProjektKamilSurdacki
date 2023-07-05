@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -39,10 +37,9 @@ public class Board {
     @JsonManagedReference(value = "taskLists")
     private Collection<TaskList> taskLists = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "userTable_id", nullable = false)
     @JsonBackReference(value="ownerToBoard")
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private User owner;
 
     @Column(name = "board_order", nullable = false)

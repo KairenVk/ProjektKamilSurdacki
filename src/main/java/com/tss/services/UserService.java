@@ -66,8 +66,10 @@ public class UserService {
         authorizationService.isAuthorized(id);
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(User.class.getSimpleName(), id));
+        String username = user.getUsername();
+        System.out.println(username);
         userRepository.delete(user);
-        credentialsService.deleteCredentials(user.getUsername());
+        credentialsService.deleteCredentials(username);
     }
 
     private void validateInput(UserDTO user) {
