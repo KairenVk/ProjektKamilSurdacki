@@ -67,7 +67,6 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(User.class.getSimpleName(), id));
         String username = user.getUsername();
-        System.out.println(username);
         userRepository.delete(user);
         credentialsService.deleteCredentials(username);
     }

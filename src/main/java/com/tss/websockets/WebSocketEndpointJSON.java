@@ -10,7 +10,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
 
-public class WebSocketEndpointJSON extends AbstractWebSocketHandler{
+public class WebSocketEndpointJSON extends AbstractWebSocketHandler {
 
     private static final Logger log = LoggerFactory.getLogger(WebSocketEndpointJSON.class);
 

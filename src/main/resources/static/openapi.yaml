@@ -1,0 +1,871 @@
+openapi: 3.0.3
+info:
+  title: PMS at Home 0.1 Alpha
+  description: |-
+    Testy
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: test@test.net
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: https://localhost:8443/rest
+tags:
+  - name: user
+    description: Everything about users
+  - name: security
+    description: Authentication
+  - name: board
+    description: Everything about boards
+  - name: list
+    description: Everything about lists
+  - name: task
+    description: Everything about tasks
+paths:
+  /users:
+      get:
+        tags:
+          - user
+        summary: Returns list of extisting users
+        operationId: getUsers
+        responses:
+          '200': 
+            description: Request successful
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/User'
+  /user/addUser:
+    post:
+      tags:
+        - user
+      summary: Add a new user
+      description: Creates a new user with given data
+      operationId: addUser
+      requestBody:
+        description: New User object. <br> Required parameters are username, password and email. <br> "boards_member" is an array of boards user should be a member of. <br> "ownedBoards" array can be used to insert board objects that should be created for a new user, along with lists for that board and tasks.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddUser'
+      responses:
+        '200': 
+          description: User sucessfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '409':
+          description: User with given username already exists.
+        '422':
+          description: Missing required parameter.
+  /user/getByUsername/{username}:
+    get:
+      tags:
+        - user
+      summary: Get a single user by his username
+      description: Returns user's data with given username
+      operationId: getUserByUsername
+      parameters:
+      - name: username
+        in: path
+        description: Username of a user
+        required: true
+        explode: true
+        schema:
+          type: string
+      responses: 
+        '200':
+          description: Returned user data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found.
+  /user/{id}:
+    get:
+      tags:
+        - user
+      summary: Get a single user by ID
+      description: Returns user's data with given ID
+      operationId: getUser
+      parameters:
+      - name: id
+        in: path
+        description: ID of a user
+        required: true
+        explode: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Returned user data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+    put:
+      tags:
+        - user
+      summary: Edit user details with given ID.
+      description: Required authentication.<br>Modify existing user. Used to change your own username, password, email. <br> After changing username and/or password, remember to generate new token.
+      operationId: editUser
+      requestBody:
+        description: Modified User object.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditUser'
+      parameters:
+        - name: id
+          in: path
+          description: ID of a user
+          required: true
+          explode: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User modified successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized. Missing token or permission to edit user.
+        '409':
+          description: User with given username already exists. Please choose other username.
+      security:
+        - bearerAuth:
+          - token
+    delete:
+      tags:
+        - user
+      summary: Delete user with given ID
+      description: Requires authentication.<br>Used to delete your own account, along with all existing boards.
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          description: ID of a user
+          required: true
+          explode: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User deleted successfully.
+        '404':
+          description: User not found.
+        '401':
+          description: Unauthorized.
+      security:
+        - bearerAuth:
+          - token
+  /board/addBoard:
+    post:
+      tags:
+        - board
+      summary: Add a new board
+      description: Requires authentication.<br>Adds a new board.
+      operationId: addBoard
+      requestBody:
+        description: New board object. <br>"Title" is required.<br>"taskLists" can be used to create lists (and tasks) in the new board.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddBoard'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Board'
+        '404':
+          description: User not found
+        '401':
+          description: Unauthorized
+        '500':
+          description: Missing required parameter(s).
+      security:
+        - bearerAuth:
+          - token
+  /board/{boardId}:
+    put:
+      tags:
+        - board
+      summary: Update an existing board
+      description: Update an existing board by ID
+      operationId: updateBoard
+      requestBody:
+        description: Update an existing board
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditBoard'
+        required: true
+      parameters:
+        - name: boardId
+          in: path
+          description: ID of the board to be edited
+          required: true
+          explode: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Board'
+        '404':
+          description: Board not found
+      security:
+        - bearerAuth:
+          - token
+    get:
+      tags:
+        - board
+      summary: Find board by ID
+      description: Returns a single board
+      operationId: getBoardById
+      parameters:
+        - name: boardId
+          in: path
+          description: ID of board to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Board'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Board'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Board not found
+    delete:
+      tags:
+        - board
+      summary: Deletes a board
+      description: delete a board
+      operationId: deleteBoard
+      parameters:
+        - name: token
+          in: header
+          description: 'Token used to authenticate a user'
+          required: true
+          schema:
+            type: string
+        - name: boardId
+          in: path
+          description: BoardId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '404':
+          description: Board not found
+        '200':
+          description: Board successfully deleted
+      security:
+        - bearerAuth:
+          - token
+  /boards:
+    get:
+      tags:
+        - board
+      summary: Finds all existing boards
+      description: Returns all boards
+      operationId: all
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Board'
+  /boards/getByUserId/{userId}:
+    get:
+      tags:
+        - board
+      summary: Finds boards by user's ID
+      description: Find boards owned by user with given ID
+      operationId: getBoardsByUserId
+      parameters:
+        - name: userId
+          in: path
+          description: ID of a user
+          required: true
+          explode: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Board'          
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Board'
+        '404':
+          description: User not found
+  /boards/getByUsername/{username}:
+    get:
+      tags:
+        - board
+      summary: Finds boards by user's username
+      description: Find boards owned by user with given username
+      operationId: getBoardsByUsername
+      parameters:
+        - name: username
+          in: path
+          description: Username of a user
+          required: true
+          explode: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Board'          
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Board'
+        '404':
+          description: User not found
+  /lists/getListsByBoard/{boardId}:
+    get:
+      tags:
+        - list
+      summary: returns task lists of a board
+      description: ''
+      operationId: getLists
+      parameters:
+        - name: boardId
+          in: path
+          description: ID of a board
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskList'
+  /list/{listId}:
+    get:
+      tags:
+        - list
+      summary: returns task list with given ID
+      description: ''
+      operationId: getList
+      parameters:
+        - name: listId
+          in: path
+          description: ID of a list
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskList'
+        '404':
+          description: Task list not found.
+    put:
+      tags:
+        - list
+      summary: edits task list with given ID
+      description: ''
+      operationId: editList
+      requestBody:
+        description: New TaskList title.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditTaskList'
+      security:
+        - bearerAuth:
+          - token
+      parameters:
+        - name: listId
+          in: path
+          description: ID of a list
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Task list updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskList'
+        '401':
+          description: Unauthorized. Missing token or authority to perform action.
+        '404':
+          description: Task list not found.
+    delete:
+      tags:
+        - list
+      summary: Deletes task list with given ID
+      description: ''
+      operationId: deleteList
+      parameters:
+      - name: listId
+        in: path
+        description: ID of a list
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Task list deleted.
+        '401':
+          description: Unauthorized. Missing token or authority to perform action.
+        '404':
+          description: Task list not found.
+      security:
+        - bearerAuth:
+          - token
+  /board/{boardId}/addList:
+    post:
+      tags:
+        - list
+      summary: Adds task list to the board
+      description: ''
+      operationId: addList
+      requestBody:
+        description: New TaskList object. Title is required.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddTaskList'
+      parameters:
+        - name: boardId
+          in: path
+          description: ID of a board
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Task list successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskList'
+        '401':
+          description: Unauthorized. Missing token or authority to perform action.
+        '404':
+          description: Board not found
+        '500':
+          description: Missing required parameter(s).
+      security:
+        - bearerAuth:
+          - token
+  /task/{taskId}:
+    get:
+      tags:
+        - task
+      summary: Returns task object with given ID
+      description: ''
+      operationId: getTask
+      parameters:
+        - name: taskId
+          in: path
+          description: ID of a task
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '404':
+          description: Task not found
+    put:
+      tags:
+        - task
+      summary: Edits task object with given ID
+      description: ''
+      operationId: editTask
+      requestBody:
+        description: Modified Task object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditTask'
+      parameters:
+        - name: taskId
+          in: path
+          description: ID of a task
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Task successfully edited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '404':
+          description: Task not found
+        '401':
+          description: Unauthorized - missing token or permissions to edit task
+      security:
+        - bearerAuth:
+          - token
+    delete:
+      tags:
+        - task
+      summary: Removes task object with given ID
+      description: ''
+      operationId: deleteTask
+      parameters:
+        - name: taskId
+          in: path
+          description: ID of a task
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Task successfully removed
+        '404':
+          description: Task not found
+        '401':
+          description: Unauthorized - missing token or permissions to edit task
+      security:
+        - bearerAuth:
+          - token
+  /list/{listId}/addTask:
+    post:
+      tags:
+        - task
+      summary: Adds a new task object
+      description: ''
+      operationId: addTask
+      requestBody:
+        description: New Task object. Title is required.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddTask'
+      parameters:
+        - name: listId
+          description: ID of a TaskList task should be added to
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Task successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '401':
+          description: Unauthorized - missing token or permissions to create task
+        '500':
+          description: Missing required parameter(s).
+      security:
+        - bearerAuth:
+          - token
+  /tasks/getTasksByList/{listId}:
+    get:
+      tags:
+        - task
+      summary: Returns a list of tasks objects assigned to TaskList with given ID
+      description: ''
+      operationId: getTasks
+      parameters:
+        - name: listId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                    $ref: '#/components/schemas/Task'
+        '500':
+          description: Missing required parameter(s)
+  /authenticate:
+    post:
+      tags:
+        - security
+      summary: Get authentication token used in POST/PUT/DELETE requests
+      description: ''
+      operationId: authenticate
+      requestBody:
+        description: User credentials. Required.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Authentication'
+      responses:
+        '200':
+          description: Sucessfully authenticated
+          content:
+            application/json:
+              schema:
+                type: string
+                example: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyIiwiZXhwIjoxNjg1MzYwNTA3LCJpYXQiOjE2ODUzNTY5MDd9.RbvInYOiNDZ0vVHNHOviJwDESjarGX1iNxVTmBRty76aljq-3qMieZXZoJTGeJYg2E1jH4MTeGdOJ8UUeBJXYQ
+          
+components:
+  schemas:
+    AddUser:
+      type: object
+      properties:
+        username:
+          type: string
+          example: ProjectManager
+        password:
+          type: string
+          example: V3rYH2rDP2$$w0rD
+        email:
+          type: string
+          example: manager@company.com
+        ownedBoards:
+          type: array
+          items:
+            $ref: '#/components/schemas/AddBoard'
+    EditUser:
+      type: object
+      properties:
+        username:
+          type: string
+          example: NewProjectManager
+        password:
+          type: string
+          example: MyNewV3rYH2rDP2$$w0rD
+        email:
+          type: string
+          example: newmanager@company.com
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 10
+        username:
+          type: string
+          example: ProjectManager
+        ownedBoards:
+          type: array
+          items:
+            $ref: '#/components/schemas/AddBoard'
+    Board:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 13
+        title:
+          type: string
+          example: ToDo Tasks
+        time_created:
+          type: string
+          example: 2023-05-29T11:25:53.063+00:00
+        time_modified:
+          type: string
+          example: 2023-05-29T11:25:53.064+00:00
+        taskLists:
+          $ref: "#/components/schemas/TaskList"
+    AddBoard:
+      type: object
+      properties:
+        title:
+          type: string
+          example: ToDo Tasks
+        taskLists:
+          type: array
+          items:
+            $ref: "#/components/schemas/AddTaskList"
+    EditBoard:
+      type: object
+      properties:
+        title:
+          type: string
+          example: New Tasks
+    TaskList:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 35
+        title:
+          type: string
+          example: In Progress
+        time_created:
+          type: string
+          example: 2023-05-29T11:25:53.063+00:00
+        time_modified:
+          type: string
+          example: 2023-05-29T11:25:53.064+00:00
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+    AddTaskList:
+      type: object
+      properties:
+        title:
+          type: string
+          example: In Progress
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/AddTask"
+    EditTaskList:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Edited TaskList
+    AddTask:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Create documentation
+        description:
+          type: string
+          example: Create documentation using Swagger for rest api
+    EditTask:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Create documentation
+        description:
+          type: string
+          example: Create documentation using Swagger for rest api
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 354
+        title:
+          type: string
+          example: Create documentation
+        description:
+          type: string
+          example: Create documentation using Swagger for rest api
+        time_created:
+          type: string
+          example: 2023-05-29T11:25:53.063+00:00
+        time_modified:
+          type: string
+          example: 2023-05-29T11:25:53.064+00:00
+        attachments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Attachment"
+        comments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Comment"
+    Attachment:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 178
+        name:
+          type: string
+          example: image
+        path:
+          type: string
+          example: https://localhost:8443/upload/image.png
+        type:
+          type: string
+          example: png
+        time_created:
+          type: string
+          example: 2023-05-29T11:25:53.063+00:00
+        time_modified:
+          type: string
+          example: 2023-05-29T11:25:53.064+00:00
+    Comment:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 39
+        content:
+          type: string
+          example: This should be done long time ago
+        time_created:
+          type: string
+          example: 2023-05-29T11:25:53.063+00:00
+    Authentication:
+      type: object
+      properties:
+        username:
+          type: string
+          example: "user"
+        password:
+          type: string
+          example: "password"
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT    # optional, arbitrary 

@@ -5,4 +5,13 @@
     <option name="useLazyOnToOneAssociations" value="true" />
     <option name="scaffoldingLanguage" />
   </component>
+  <component name="PersistenceUnitSettings">
+    <persistence-units>
+      <persistence-unit name="Default">
+        <packages>
+          <package value="com.tss.ProjektKamilSurdacki" />
+        </packages>
+      </persistence-unit>
+    </persistence-units>
+  </component>
 </project>
